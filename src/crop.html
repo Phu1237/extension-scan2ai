@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+	<style>
+		canvas {
+			width: auto;
+			height: auto;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		#backdrop {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #00000050;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="backdrop" class="hidden"></div>
+	<div id="select" class="hidden"></div>
+	<div id="capture" style="padding: 10px; background: #f5da55">
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+		<h4 style="color: #000; ">Hello world!</h4>
+	</div>
+	<img id="img" class="hidden">
+	<div>
+		<canvas id="canvas"></canvas>
+	</div>
+	<div>
+		Current mouse position: <span id="x"></span> x <span id="y"></span><br />
+		Current selected: <span id="width"></span> x <span id="height"></span>
+	</div>
+	<script>
+		html2canvas(document.body).then(canvas => {
+			let ctx = canvas.getContext('2d');
+			document.getElementById('img').src = canvas.toDataURL();
+			// let img = document.getElementById('img');
+			// let canvasA = document.getElementById('canvas');
+			// let ctxA = canvasA.getContext('2d');
+			// ctxA.drawImage(img, 0, 0, 100, 100);
+			// document.body.appendChild(canvas)
+		});
+		let selectingStart = false;
+		var x = null;
+		var y = null;
+		var width = null;
+		var height = null;
+		function crop() {
+			console.log('crop');
+			let canvas = document.getElementById('canvas');
+			let ctx = canvas.getContext('2d');
+			let img = document.getElementById('img');
+			canvas.width = width;
+			canvas.height = height;
+			canvas.style.width = width + 'px';
+			canvas.style.height = height + 'px';
+			ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+			// document.getElementById('img').src = canvas.toDataURL();
+		}
+
+		document.addEventListener('mousemove', onMouseUpdate, false);
+		document.addEventListener('mouseenter', onMouseUpdate, false);
+		document.addEventListener('mousedown', onMouseDown, false);
+		document.addEventListener('mouseup', onMouseUp, false);
+
+		let select = document.getElementById('select');
+		function onMouseUpdate(e) {
+			if (!selectingStart) return;
+			let currentX = e.pageX;
+			let currentY = e.pageY;
+			width = currentX - x;
+			height = currentY - y;
+			// console.log(e, x, y);
+			// document.getElementById('x').innerHTML = x;
+			// document.getElementById('y').innerHTML = y;
+			select.style.width = width + 'px';
+			select.style.height = height + 'px';
+		}
+
+		function onMouseDown(e) {
+			if (e.which !== 3) return;
+			selectingStart = true;
+			x = e.pageX;
+			y = e.pageY;
+			document.getElementById('x').innerHTML = x;
+			document.getElementById('y').innerHTML = y;
+			document.getElementById('backdrop').classList.remove('hidden');
+			select.classList.remove('hidden');
+			select.style.position = 'absolute';
+			select.style.left = x + 'px';
+			select.style.top = y + 'px';
+			select.style.width = 0 + 'px';
+			select.style.height = 0 + 'px';
+			select.style.zIndex = 1;
+			select.style.backgroundColor = '#00000010'
+		}
+
+		function onMouseUp(e) {
+			if (selectingStart === false) return;
+			selectingStart = false;
+			crop();
+			// let endX = e.pageX;
+			// let endY = e.pageY;
+			// console.log(x, y);
+			// console.log(endX, endY);
+			// let width = endX - x;
+			// let height = endY - y;
+			document.getElementById('width').innerHTML = width;
+			document.getElementById('height').innerHTML = height;
+		}
+
+		function getMouseX() {
+			return x;
+		}
+
+		function getMouseY() {
+			return y;
+		}
+	</script>
+</body>
+
+</html>
