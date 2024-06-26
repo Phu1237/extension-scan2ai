@@ -22,8 +22,8 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           ui: fileURLToPath(new URL('./ui.html', import.meta.url)),
-          content: fileURLToPath(new URL('./src/core/content.js', import.meta.url)),
-          background: fileURLToPath(new URL('./src/core/background.js', import.meta.url))
+          content: fileURLToPath(new URL('./src/core/content.ts', import.meta.url)),
+          background: fileURLToPath(new URL('./src/core/background.ts', import.meta.url))
         },
         output: {
           entryFileNames: '[name].js',
