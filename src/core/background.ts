@@ -18,6 +18,7 @@ function reddenPage() {
 //   }
 // });
 
+const fullpage = false;
 async function captureTab(tab) {
   await chrome.tabs.captureVisibleTab((dataUrl) => {
     // var img = document.createElement('img');
