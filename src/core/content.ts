@@ -1,4 +1,4 @@
-import { init } from './selecting/a';
+import { init, destroy } from './selecting/a';
 
 function extCss() {
   return `
@@ -62,24 +62,56 @@ function extHtml() {
   `;
 }
 
-function crop(x: number, y: number, width: number, height: number) {
-  console.log('crop', x, y, width, height);
+
+function crop(img: string, x: number, y: number, width: number, height: number) {
   let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
   canvas = canvas as HTMLCanvasElement;
   const ctx = canvas.getContext('2d');
-  const img = document.getElementById('img') as CanvasImageSource;
-  if (!canvas || !ctx || !img) return;
-  canvas.setAttribute('width', String(width));
-  canvas.setAttribute('height', String(height));
-  // canvas.style.width = width + 'px';
-  // canvas.style.height = height + 'px';
-  ctx.drawImage(img, x, y, width, height, 0, 0, width, height);
+  if (!canvas || !ctx) return;
+  const image = new Image();
+  image.src = img;
+  image.onload = () => {
+    canvas.setAttribute('width', String(width));
+    canvas.setAttribute('height', String(height));
+    ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
 
+    chrome.runtime.sendMessage({
+      action: 'crop',
+      value: canvas.toDataURL(),
+    })
+  };
+}
+
+
+function selected(x: number, y: number, width: number, height: number) {
   chrome.runtime.sendMessage({
-    action: 'capturedImage',
-    value: canvas.toDataURL()
+    action: 'selected',
+    value: {
+      x,
+      y,
+      width,
+      height,
+      // image: canvas.toDataURL()
+    }
   });
 }
+
+chrome.runtime.onMessage.addListener(
+  function (request, sender, sendResponse) {
+    console.log('listen', request);
+    if (request.result === 'selected') {
+      const img = request.value.result;
+      const x = request.value.x;
+      const y = request.value.y;
+      const width = request.value.width;
+      const height = request.value.height;
+      crop(img, x, y, width, height);
+    } else if (request.action === 'off') {
+      document.getElementById('scan2ai')?.remove();
+      destroy();
+    }
+  }
+);
 
 function getBodyHeight() {
   const body = document.body,
@@ -89,10 +121,12 @@ function getBodyHeight() {
 }
 
 function initExtension() {
+  const extension = document.createElement('div');
+  extension.id = 'scan2ai';
   const style = document.createElement('style');
   style.textContent = extCss();
   style.id = 'scan2ai-style';
-  document.body.appendChild(style);
+  extension.appendChild(style);
   const html = document.createElement('div');
   html.id = 'scan2ai-html';
   html.style.position = 'absolute';
@@ -102,7 +136,8 @@ function initExtension() {
   html.style.height = getBodyHeight() + 'px';
   html.style.zIndex = '9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999';
   html.innerHTML = extHtml();
-  document.body.appendChild(html);
+  extension.appendChild(html);
+  document.body.appendChild(extension);
 }
 initExtension();
 
@@ -125,7 +160,7 @@ init({
     const y = fullpage ? result.pageY : result.clientY;
     const width = result.width;
     const height = result.height;
-    crop(x, y, width, height);
+    selected(x, y, width, height);
     if (fullpage) {
       //
     } else {

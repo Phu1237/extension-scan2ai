@@ -20,7 +20,7 @@ function reddenPage() {
 
 const fullpage = false;
 async function captureTab(tab) {
-  await chrome.tabs.captureVisibleTab((dataUrl) => {
+  return await chrome.tabs.captureVisibleTab((dataUrl) => {
     // var img = document.createElement('img');
     // img.src = dataUrl;
     // img.onload = () => {
@@ -58,36 +58,57 @@ chrome.action.onClicked.addListener(async (tab) => {
   // Next state will always be the opposite
   const nextState = prevState === 'ON' ? 'OFF' : 'ON'
 
-  captureTab(tab);
+  // captureTab(tab);
   // Set the action badge to the next state
   await chrome.action.setBadgeText({
     tabId: tab.id,
     text: nextState,
   });
-  await chrome.scripting.executeScript(
-    {
-      target: { tabId: tab.id },
-      files: [
-        'html2canvas.min.js',
-        'content.js'
-      ],
-    },
-    () => { }
-  )
+  if (nextState === 'ON') {
+    await chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        files: [
+          'html2canvas.min.js',
+          'content.js'
+        ],
+      },
+      () => { }
+    )
+  } else {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'off'
+    });
+  }
   // }
 });
 
 chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
+  async function (request, sender, sendResponse) {
     console.log(sender.tab ?
-      "from a content script:" + sender.tab.url :
+      "from a content script:" + sender.tab :
       "from the extension");
-    if (request.action === 'capturedImage') {
-      console.log('', request.value);
+    console.log('request', request);
+    if (request.action === 'selected') {
+      // captureTab(sender.tab).then((selectedImage) => {
+      //   console.log('captured', selectedImage);
+      // });
+      chrome.tabs.captureVisibleTab().then((result) => {
+        console.log('captured', sender);
+        if (!sender.tab || !sender.tab.id) return;
+
+        chrome.tabs.sendMessage(sender.tab.id, {
+          result: 'selected',
+          value: {
+            ...request.value,
+            result: result
+          }
+        })
+      });
+    } else if (request.action === 'crop') {
       chrome.storage.local.set({
         image: request.value
       });
-      // sendResponse({ result: 'capturedImage' })
     }
   }
 );

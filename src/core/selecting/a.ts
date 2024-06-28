@@ -34,6 +34,12 @@ function initEventListeners(): void {
   document.addEventListener('mousedown', onMouseDown, false);
   document.addEventListener('mouseup', onMouseUp, false);
 }
+function destroyEventListeners(): void {
+  document.removeEventListener('mousemove', onMouseUpdate);
+  document.removeEventListener('mouseenter', onMouseUpdate);
+  document.removeEventListener('mousedown', onMouseDown);
+  document.removeEventListener('mouseup', onMouseUp);
+}
 
 function onMouseDown(event: MouseEvent): void {
   if (event.button !== 0) return;
@@ -107,5 +113,5 @@ export function init(overrideOptions: Options): void {
 }
 
 export function destroy(): void {
-  options.document?.removeEventListener('mousedown', onMouseDown);
+  destroyEventListeners();
 }
