@@ -1,24 +1,11 @@
+import type { ChromeMessageRequest } from "@/types/chromemessage";
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({
     text: "OFF",
   });
 });
 
-function reddenPage() {
-  document.body.style.backgroundColor = 'red';
-}
-
-// chrome.action.onClicked.addListener((tab) => {
-//   console.log(123);
-//   if (!tab.url.includes('chrome://')) {
-//     chrome.scripting.executeScript({
-//       target: { tabId: tab.id },
-//       func: reddenPage
-//     });
-//   }
-// });
-
-const fullpage = false;
 async function captureTab(tab) {
   return await chrome.tabs.captureVisibleTab((dataUrl) => {
     // var img = document.createElement('img');
@@ -77,38 +64,47 @@ chrome.action.onClicked.addListener(async (tab) => {
     )
   } else {
     chrome.tabs.sendMessage(tab.id, {
-      action: 'off'
+      action: 'destroy'
     });
   }
   // }
 });
 
 chrome.runtime.onMessage.addListener(
-  async function (request, sender, sendResponse) {
+  async function (request: ChromeMessageRequest, sender, sendResponse) {
     console.log(sender.tab ?
       "from a content script:" + sender.tab :
       "from the extension");
     console.log('request', request);
-    if (request.action === 'selected') {
-      // captureTab(sender.tab).then((selectedImage) => {
-      //   console.log('captured', selectedImage);
-      // });
-      chrome.tabs.captureVisibleTab().then((result) => {
-        console.log('captured', sender);
-        if (!sender.tab || !sender.tab.id) return;
+    switch (request.action) {
+      case 'selected':
+        if (request.attributes.capturePlace && request.attributes.capturePlace === 'background') {
+          switch (request.attributes.captureType) {
+            case 'visible': {
+              const result = await chrome.tabs.captureVisibleTab();
 
-        chrome.tabs.sendMessage(sender.tab.id, {
-          result: 'selected',
-          value: {
-            ...request.value,
-            result: result
+              if (!sender.tab || !sender.tab.id) return;
+              chrome.tabs.sendMessage(sender.tab.id, {
+                result: 'selected',
+                value: {
+                  ...request.value,
+                  result: result
+                }
+              })
+              break;
+            }
+            case 'fullpage':
+              // captureTab(sender.tab);
+              break;
+            default:
           }
-        })
-      });
-    } else if (request.action === 'crop') {
-      chrome.storage.local.set({
-        image: request.value
-      });
+        }
+        break;
+      case 'crop':
+        chrome.storage.local.set({
+          image: request.value
+        });
+        break;
     }
   }
 );

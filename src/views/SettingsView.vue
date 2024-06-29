@@ -2,18 +2,31 @@
   <div class="py-12">
     <h2 class="text-2xl font-bold">Extension settings</h2>
     <div class="mt-8 max-w-md">
-      <label class="block">
-        <span class="text-gray-700">Capture method</span>
-        <select
-          class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          v-model="captureMethod"
-        >
-          <option value="0">Chrome API (visible content)</option>
-          <option value="1">Chrome API (fullpage)</option>
-          <option value="2">Html2canvas</option>
-        </select>
-      </label>
-      <small>ABC</small>
+      <div class="grid grid-cols-1 gap-6">
+        <label class="block">
+          <span class="text-gray-700">Capture method</span>
+          <select
+            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            v-model="captureMethod"
+          >
+            <option value="0">Chrome API (visible content)</option>
+            <option value="1">Chrome API (fullpage)</option>
+            <option value="2">Html2canvas</option>
+          </select>
+          <small>ABC</small>
+        </label>
+        <label class="block">
+          <span class="text-gray-700">Selecting method</span>
+          <select
+            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            v-model="captureMethod"
+          >
+            <option value="0">Drag and Drop</option>
+            <option value="1">Click to Start and End</option>
+          </select>
+          <small>ABC</small>
+        </label>
+      </div>
     </div>
   </div>
   <div class="py-12">
