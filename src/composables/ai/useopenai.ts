@@ -1,8 +1,7 @@
-// https://ai.google.dev/gemini-api/docs/api-overview
 import { API } from '@/constants/ai';
 import type { RequestContent } from '@/types/ai';
 
-export default function useGemini() {
+export default function useOpenAI() {
   const buildRequestMessage = (messages: Array<any>, previousMessages: Array<any> = []) => {
     const requestMessages = previousMessages;
     const content = messages.map((message) => {
@@ -10,44 +9,45 @@ export default function useGemini() {
     });
     requestMessages.push({
       role: 'user',
-      parts: content
+      content: content
     });
     return requestMessages;
   };
   const buildRequestContent = (content: string | RequestContent) => {
     if (typeof content === 'string') {
       return {
+        type: 'text',
         text: content
       };
     }
     if (!content.type) return;
     switch (content.type) {
-      case 'text':
-        return {
-          text: content.content
-        };
       case 'image':
         return {
-          inline_data: content.content
+          type: 'image_url',
+          image_url: {
+            url: content.content
+          }
         };
       default:
         return content;
     }
   };
   const makeRequest = (attributes: any, payload: any) => {
-    let uri = API.GEMINI.uri;
-    uri = uri.replace('{{api_model}}', attributes.api_model);
-    if (!attributes.use_latest) {
-      uri = uri.replace('{{is_latest}}', '-latest');
-    }
-    uri = uri.replace('{{api_key}}', attributes.api_key);
-    return fetch(uri, {
+    return fetch(`${API.OPENAI.uri}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${attributes.api_key}`
       },
       body: JSON.stringify({
-        contents: payload.messages
+        model: attributes.api_model,
+        messages: payload.messages,
+        temperature: 1,
+        max_tokens: 256,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
       })
     });
   };

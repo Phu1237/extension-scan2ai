@@ -6,15 +6,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-const scan = () => {
-  console.log('scan')
-}
-import useChromeStorage from '@/composables/usechromestorage'
+import { ref } from 'vue';
+import { CHROME_STORAGE } from '@/constants/common';
+import useChromeStorage from '@/composables/usechromestorage';
 
-const { get } = useChromeStorage()
-const image = ref('')
-get(['image'], (res) => {
-  image.value = res.image
-})
+const scan = () => {
+  console.log('scan');
+};
+const { getChromeStorage } = useChromeStorage();
+const image = ref<string>('');
+getChromeStorage(CHROME_STORAGE.LOCAL, ['image']).then((res) => {
+  image.value = res.image;
+});
 </script>

@@ -1,3 +1,16 @@
+export const API = {
+  GEMINI: {
+    name: 'Gemini',
+    value: 'gemini',
+    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{is_latest}}:generateContent?key={{api_key}}'
+  },
+  OPENAI: {
+    name: 'OpenAI',
+    value: 'openai',
+    uri: 'https://api.openai.com/v1/chat/completions'
+  },
+}
+
 // https://ai.google.dev/gemini-api/docs/models/gemini
 // https://platform.openai.com/api-keys
 export const GEMINI = {
@@ -79,6 +92,6 @@ export const OPENAI = {
 export const MORE = {
   CUSTOM: {
     name: 'Custom',
-    value: ''
+    value: 'custom'
   }
 }
