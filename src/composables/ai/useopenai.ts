@@ -33,7 +33,7 @@ export default function useOpenAI() {
         return content;
     }
   };
-  const makeRequest = (attributes: any, payload: any) => {
+  const makeRequest = (attributes: any, payload: any): Promise<Response> => {
     return fetch(`${API.OPENAI.uri}`, {
       method: 'POST',
       headers: {

@@ -4,6 +4,7 @@ export interface DefaultStorage extends Storage {
   api: string;
   apiInfo: StorageAPIInfo;
   image: string;
+  historyLimitSize: number;
 }
 
 export interface Storage {
@@ -13,16 +14,34 @@ export interface Storage {
   apiInfo?: StorageAPIInfo;
   apiKey?: StorageAPIKey;
   image?: string;
+  history?: StorageHistoryItem[];
+  historyLimitSize?: number;
 }
 
 export interface StorageAPIInfo {
-  [key: string]: StorageAPIInfoObject
+  [key: string]: StorageAPIInfoObject;
 }
 
 export interface StorageAPIInfoObject {
   apiModel: string;
+  useLatest?: boolean;
 }
 
 export interface StorageAPIKey {
   [key: string]: string;
+}
+
+export interface StorageHistoryItem {
+  api: string;
+  apiInfo: StorageAPIInfoObject;
+  timestamp: number;
+  session: StorageHistoryItemSession;
+  success: boolean;
+  result: string;
+  rawResult: string;
+}
+
+export interface StorageHistoryItemSession {
+  content: string;
+  extraContent?: string[];
 }

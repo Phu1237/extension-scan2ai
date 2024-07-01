@@ -2,11 +2,19 @@ export const API = {
   GEMINI: {
     name: 'Gemini',
     value: 'gemini',
-    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{is_latest}}:generateContent?key={{api_key}}'
+    hint: {
+      model: 'Gemini Models Document: <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">here</a>',
+      api_key: 'Get Gemini API key <a href="https://platform.openai.com/api-keys" target="_blank">here</a>',
+    },
+    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{use_latest}}:generateContent?key={{api_key}}',
   },
   OPENAI: {
     name: 'OpenAI',
     value: 'openai',
+    hint: {
+      model: 'OpenAI Document: <a href="https://platform.openai.com/docs/models" target="_blank">here</a>',
+      api_key: 'Get OpenAI API key <a href="https://aistudio.google.com/app/apikey" target="_blank">here</a>',
+    },
     uri: 'https://api.openai.com/v1/chat/completions'
   },
 }

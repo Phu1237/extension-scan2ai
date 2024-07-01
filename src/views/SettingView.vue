@@ -1,86 +1,149 @@
 <template>
-  <div class="py-12">
-    <h2 class="text-2xl font-bold">Extension settings</h2>
-    <div class="mt-8 max-w-md">
-      <div class="grid grid-cols-1 gap-6">
-        <label class="block">
-          <span class="text-gray-700">Capture method</span>
-          <select
-            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="captureMethod"
-          >
-            <template v-for="(item, index) in CAPTURE_METHOD_LIST" :key="index">
-              <option :value="item.value">{{ item.name }}</option>
-            </template>
-          </select>
-          <small>ABC</small>
-        </label>
-        <label class="block">
-          <span class="text-gray-700">Selecting method</span>
-          <select
-            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="selectingMethod"
-          >
-            <template v-for="(item, index) in SELECTING_METHOD_LIST" :key="index">
-              <option :value="item.value">{{ item.name }}</option>
-            </template>
-          </select>
-          <small>ABC</small>
-        </label>
-      </div>
-    </div>
-  </div>
-  <div class="py-12">
-    <h2 class="text-2xl font-bold">Assistant settings</h2>
-    <div class="mt-8 max-w-md">
-      <div class="grid grid-cols-1 gap-6">
-        <label class="block">
-          <span class="text-gray-700">Choose your Assistant</span>
-          <select
-            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="api"
-          >
-            <template v-for="(item, index) in API_LIST" :key="index">
-              <option :value="item.value">{{ item.name }}</option>
-            </template>
-          </select>
-        </label>
-        <label class="block">
-          <span class="text-gray-700">Assistant model</span>
-          <select
-            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="apiModel"
-          >
-            <template v-for="(item, index) in apiModelList" :key="index">
-              <option :value="item.value">{{ item.name }}</option>
-            </template>
-          </select>
-        </label>
-        <label class="block">
-          <span class="text-gray-700">Assistant model name</span>
-          <input
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder=""
-            :value="apiModelName"
-            :disabled="apiModelName !== 'custom'"
-          />
-        </label>
-        <label class="block">
-          <span class="text-gray-700">API key</span>
-          <input
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder=""
-            v-model="apiKey"
-          />
-        </label>
+  <h1>Setting</h1>
+  <h2>Extension settings</h2>
+  <v-select
+    label="Capture method"
+    class="mb-2"
+    :items="CAPTURE_METHOD_LIST"
+    item-title="name"
+    item-value="value"
+    item-props="props"
+    v-model="captureMethod"
+    persistent-hint
+  >
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.CAPTURE_METHOD }}
+      </v-tooltip>
+    </template>
+    <template #message>
+      <div v-html="captureMethodHint"></div>
+    </template>
+  </v-select>
+  <v-select
+    label="Selecting method"
+    class="mb-2"
+    :items="SELECTING_METHOD_LIST"
+    item-title="name"
+    item-value="value"
+    item-props="props"
+    v-model="selectingMethod"
+    persistent-hint
+  >
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.SELECTING_METHOD }}
+      </v-tooltip>
+    </template>
+  </v-select>
+  <v-combobox
+    label="History limit records"
+    :hint="`Save history will take more storage. Storage usage: ${chromeLocalUsage}%`"
+    class="mb-2"
+    :items="HISTORY_LIMIT_SIZE_LIST"
+    v-model="historyLimitSize"
+    persistent-hint
+  >
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.HISTORY_LIMIT_SIZE }}
+      </v-tooltip>
+    </template>
+  </v-combobox>
+  <h2 class="text-2xl font-bold">Assistant settings</h2>
+  <v-select
+    label="Choose your Assistant"
+    class="mb-2"
+    :items="API_LIST"
+    item-title="name"
+    item-value="value"
+    v-model="api"
+    persistent-hint
+  >
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.API }}
+      </v-tooltip>
+    </template>
+  </v-select>
+  <v-select
+    label="Assistant model"
+    class="mb-2"
+    :items="apiModelList"
+    item-title="name"
+    item-value="value"
+    v-model="apiModel"
+    persistent-hint
+  >
+    <template v-slot:prepend v-if="api === 'gemini'">
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-checkbox-btn v-bind="props" v-model="apiModelUseLatest"></v-checkbox-btn>
+        </template>
+        {{ TOOLTIP.API_MODEL_USE_LATEST }}
+      </v-tooltip>
+    </template>
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.API_MODEL }}
+      </v-tooltip>
+    </template>
+    <template #message>
+      <div v-html="apiHint?.model"></div>
+    </template>
+  </v-select>
+  <v-text-field
+    label="Assistant model name"
+    class="mb-2"
+    v-model="apiModelName"
+    :disabled="apiModelName !== 'custom'"
+    persistent-hint
+  >
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.API_MODEL_NAME }}
+      </v-tooltip>
+    </template>
+  </v-text-field>
+  <v-text-field label="API key" hint="message" class="mb-2" v-model="apiKey" persistent-hint>
+    <template v-slot:append>
+      <v-tooltip location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+        </template>
+        {{ TOOLTIP.API_KEY }}
+      </v-tooltip>
+    </template>
+    <template #message>
+      <div v-html="apiHint?.api_key"></div>
+    </template>
+  </v-text-field>
 
-        <button @click="setData">Update</button>
-        <button @click="clearData">Clear</button>
-        <button @click="test">Test</button>
-      </div>
-    </div>
+  <div class="d-flex flex-wrap ga-3">
+    <v-btn color="primary" @click="setData">Update</v-btn>
+    <template v-if="isDev">
+      <v-btn @click="check">Check</v-btn>
+      <v-btn @click="clearData">Clear</v-btn>
+      <v-btn @click="test">Test</v-btn>
+    </template>
   </div>
 </template>
 
@@ -91,16 +154,24 @@ import useAI from '@/composables/useai';
 import useChromeStorage from '@/composables/usechromestorage';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
+  TOOLTIP,
   DEFAULT,
   CAPTURE_METHOD_LIST,
   SELECTING_METHOD_LIST,
+  HISTORY_LIMIT_SIZE_LIST,
   API_LIST,
   API_MODEL_LIST
 } from '@/constants/setting';
 import type { Storage } from '@/types/storage';
 
-const { base64ImageToImageObject } = useCommon();
-const { getChromeStorage, setChromeStorage, clearChromeStorage } = useChromeStorage();
+const { isDev, log, getStorageUsage, base64ImageToImageObject } = useCommon();
+const {
+  getChromeStorage,
+  setChromeStorage,
+  clearChromeStorage,
+  pushChromeStorageHistory,
+  clearChromeStorageHistory
+} = useChromeStorage();
 
 onBeforeMount(async () => {
   await fetchData();
@@ -111,24 +182,33 @@ const chromeSync = ref<Storage>();
 const image = ref<string>('');
 const captureMethod = ref<string>('');
 const selectingMethod = ref<number>(0);
+const historyLimitSize = ref<number>(0);
 const api = ref<string>(DEFAULT.api);
 const apiModel = ref<string>('');
+const apiModelUseLatest = ref<boolean>(false);
 const apiKey = ref<string>('');
+const chromeLocalUsage = ref<number>(0);
 
 const fetchData = async () => {
   const local = await getChromeStorage(CHROME_STORAGE.LOCAL, null);
-  console.log('Chrome storage local: ', local);
+  log('Chrome storage local: ', local);
   chromeLocal.value = local;
   image.value = local.image ?? DEFAULT.image;
+  apiKey.value = local.apiKey?.[api.value] ?? '';
 
   const sync = await getChromeStorage(CHROME_STORAGE.SYNC, null);
-  console.log('Chrome storage sync: ', sync);
+  log('Chrome storage sync: ', sync);
   chromeSync.value = sync;
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
+  historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
-  apiKey.value = sync.apiKey?.[api.value] ?? '';
+  apiModelUseLatest.value =
+    sync.apiInfo?.[api.value]?.useLatest ?? !!DEFAULT.apiInfo.gemini.useLatest;
+
+  const { usage } = await getStorageUsage(CHROME_STORAGE.LOCAL);
+  chromeLocalUsage.value = Math.round(usage * 100);
 };
 
 watch(api, (newAPI) => {
@@ -143,6 +223,31 @@ const apiModelList = computed(() => {
 const apiModelName = computed(() => {
   return API_MODEL_LIST[api.value]?.find((item) => item.value === apiModel.value)?.value;
 });
+// Hints
+const captureMethodHint = computed(() => {
+  const captureMethodWithHint = CAPTURE_METHOD_LIST.find(
+    (item) => item.value === captureMethod.value
+  );
+  return captureMethodWithHint?.hint;
+});
+const apiHint = computed(() => {
+  const apiWithHint = API_LIST.find((item) => item.value === api.value);
+  return apiWithHint?.hint;
+});
+
+const check = () => {
+  log('captureMethod', captureMethod.value);
+  log('selectingMethod', selectingMethod.value);
+  log(
+    'historyLimitSize',
+    historyLimitSize.value,
+    parseInt(historyLimitSize.value as unknown as string) ?? DEFAULT.historyLimitSize
+  );
+  log('api', api.value);
+  log('apiModel', apiModel.value);
+  log('apiModelUseLatest', apiModelUseLatest.value);
+  log('apiKey', apiKey.value);
+};
 
 const setData = async () => {
   await setChromeStorage(CHROME_STORAGE.LOCAL, {
@@ -157,40 +262,24 @@ const setData = async () => {
     api: api.value.trim(),
     apiInfo: {
       [api.value]: {
-        apiModel: apiModel.value.trim()
+        apiModel: apiModel.value.trim(),
+        useLatest: apiModelUseLatest.value
       }
-    }
+    },
+    historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
   });
 };
 const clearData = async () => {
-  await clearChromeStorage(CHROME_STORAGE.LOCAL);
+  // await clearChromeStorage(CHROME_STORAGE.LOCAL);
+  clearChromeStorageHistory();
   await clearChromeStorage(CHROME_STORAGE.SYNC);
 };
 
 const test = async () => {
-  console.log('Test');
-  let result: any;
-  if (api.value === 'openai') {
-    const { useOpenAI } = useAI();
-    const { buildRequestMessage, makeRequest } = useOpenAI();
-    const messages = buildRequestMessage([
-      'image to text',
-      {
-        type: 'image',
-        content: image.value
-      }
-    ]);
-    console.log('openai message', messages);
-    result = await makeRequest(
-      {
-        api_model: apiModel.value.trim(),
-        api_key: apiKey.value.trim()
-      },
-      {
-        messages: messages
-      }
-    );
-  } else if (api.value === 'gemini') {
+  let rawResult: any;
+  let jsonResult: any;
+  let result: string = '';
+  if (api.value === 'gemini') {
     const { useGemini } = useAI();
     const { buildRequestMessage, makeRequest } = useGemini();
     const imageObject = base64ImageToImageObject(image.value);
@@ -202,7 +291,33 @@ const test = async () => {
       }
     ]);
     console.log('gemini message', messages);
-    result = await makeRequest(
+    rawResult = await makeRequest(
+      {
+        api_model: apiModel.value.trim(),
+        use_latest: apiModelUseLatest.value,
+        api_key: apiKey.value.trim()
+      },
+      {
+        messages: messages
+      }
+    );
+    jsonResult = await rawResult.json();
+
+    result =
+      jsonResult.candidates?.[0]?.content.parts?.[0]?.text ??
+      jsonResult.error?.message ??
+      'Unexpected error. Check raw result.';
+  } else if (api.value === 'openai') {
+    const { useOpenAI } = useAI();
+    const { buildRequestMessage, makeRequest } = useOpenAI();
+    const messages = buildRequestMessage([
+      'image to text',
+      {
+        type: 'image',
+        content: image.value
+      }
+    ]);
+    rawResult = await makeRequest(
       {
         api_model: apiModel.value.trim(),
         api_key: apiKey.value.trim()
@@ -211,7 +326,29 @@ const test = async () => {
         messages: messages
       }
     );
+    jsonResult = await rawResult.json();
+    result =
+      jsonResult.choices?.[0]?.message.content ??
+      jsonResult.error?.message ??
+      'Unexpected error. Check raw result.';
   }
-  console.log(result);
+  const newHistory = {
+    api: api.value,
+    apiInfo: {
+      apiModel: apiModel.value.trim(),
+      useLatest: apiModelUseLatest.value
+    },
+    session: {
+      content: image.value,
+      extraContent: ['image to text']
+    },
+    timestamp: Date.now(),
+    success: rawResult.status === 200,
+    result: result,
+    rawResult: JSON.stringify(jsonResult)
+  };
+  pushChromeStorageHistory(newHistory);
+  log('raw', rawResult);
+  log('log new history', newHistory);
 };
 </script>

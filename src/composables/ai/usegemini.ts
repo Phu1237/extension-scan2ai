@@ -34,12 +34,11 @@ export default function useGemini() {
         return content;
     }
   };
-  const makeRequest = (attributes: any, payload: any) => {
+  const makeRequest = (attributes: any, payload: any): Promise<Response> => {
     let uri = API.GEMINI.uri;
     uri = uri.replace('{{api_model}}', attributes.api_model);
-    if (!attributes.use_latest) {
-      uri = uri.replace('{{is_latest}}', '-latest');
-    }
+    const useLatest = attributes.use_latest ? '-latest' : '';
+    uri = uri.replace('{{use_latest}}', useLatest);
     uri = uri.replace('{{api_key}}', attributes.api_key);
     return fetch(uri, {
       method: 'POST',

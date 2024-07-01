@@ -1,8 +1,6 @@
 <template>
-  <div class="m-2 border-4 border-black border-solid">
-    <img :src="image" alt="" @click="scan" />
-    <textarea class="bg-primary" />
-  </div>
+  <h1>Dashboard</h1>
+  <img :src="image" alt="" @click="scan" />
 </template>
 
 <script lang="ts" setup>
@@ -16,6 +14,6 @@ const scan = () => {
 const { getChromeStorage } = useChromeStorage();
 const image = ref<string>('');
 getChromeStorage(CHROME_STORAGE.LOCAL, ['image']).then((res) => {
-  image.value = res.image;
+  image.value = res.image ?? '';
 });
 </script>

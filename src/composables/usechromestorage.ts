@@ -1,7 +1,11 @@
+import type { Storage, StorageHistoryItem } from "@/types/storage";
 import { CHROME_STORAGE } from "@/constants/common";
-import type { Storage } from "@/types/storage";
+import { DEFAULT } from "@/constants/setting";
+import useCommon from "./usecommon";
 
 export default function useChromeStorage() {
+  const { log } = useCommon();
+
   const fetchChromeStorage = () => {
     return Promise.all([getChromeStorage(CHROME_STORAGE.LOCAL), getChromeStorage(CHROME_STORAGE.SYNC)]);
   }
@@ -33,15 +37,34 @@ export default function useChromeStorage() {
         throw new Error('Unsupported storage type');
     }
   }
-  const clearChromeStorage = (storage: string) => {
+  const clearChromeStorage = async (storage: string) => {
     switch (storage) {
       case 'local':
-        return chrome.storage.local.clear();
+        return await chrome.storage.local.clear();
       case 'sync':
-        return chrome.storage.sync.clear();
+        return await chrome.storage.sync.clear();
       default:
         throw new Error('Unsupported storage type');
     }
+  }
+  const pushChromeStorageHistory = async (item: StorageHistoryItem) => {
+    const local = await getChromeStorage(CHROME_STORAGE.LOCAL, ['history']);
+    const sync = await getChromeStorage(CHROME_STORAGE.SYNC, ['historyLimitSize']);
+    const history = local.history ?? [];
+    const historyLimitSize = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
+    history.unshift(item);
+    if (historyLimitSize !== -1) {
+      history.splice(sync.historyLimitSize ?? DEFAULT.historyLimitSize);
+      log('pushChromeStorageHistory cleaning old histories. Limit: ' + historyLimitSize);
+    }
+    setChromeStorage(CHROME_STORAGE.LOCAL, {
+      history: history
+    });
+  }
+  const clearChromeStorageHistory = async () => {
+    return await setChromeStorage(CHROME_STORAGE.LOCAL, {
+      history: []
+    });
   }
 
   return {
@@ -49,5 +72,7 @@ export default function useChromeStorage() {
     getChromeStorage,
     setChromeStorage,
     clearChromeStorage,
+    pushChromeStorageHistory,
+    clearChromeStorageHistory,
   }
 }
