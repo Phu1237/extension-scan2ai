@@ -1,7 +1,7 @@
-import { API, GEMINI, OPENAI, MORE } from "@/constants/ai"
-import { HELLO_WORLD_IMAGE } from '@/constants/sample'
-import { CAPTURE_METHOD_VALUE, SELECTING_METHOD_VALUE } from "./common";
-import type { DefaultStorage } from "@/types/storage";
+import { API, GEMINI, OPENAI, MORE } from '@/constants/ai';
+import { HELLO_WORLD_IMAGE } from '@/constants/sample';
+import { CAPTURE_METHOD_VALUE, SELECTING_METHOD_VALUE } from './common';
+import type { DefaultStorage } from '@/types/storage';
 
 export const CAPTURE_METHOD_LIST = [
   {
@@ -24,47 +24,32 @@ export const CAPTURE_METHOD_LIST = [
     props: {
       disabled: true
     }
-  },
+  }
 ];
 
 export const SELECTING_METHOD_LIST = [
   {
     name: 'Drag and Drop',
-    value: SELECTING_METHOD_VALUE.MOUSE_DRAG_AND_DROP,
+    value: SELECTING_METHOD_VALUE.MOUSE_DRAG_AND_DROP
   },
   {
     name: 'Click to Start and End',
-    value: SELECTING_METHOD_VALUE.MOUSE_CLICK_TO_START_AND_END,
-  },
+    value: SELECTING_METHOD_VALUE.MOUSE_CLICK_TO_START_AND_END
+  }
 ];
 
-export const HISTORY_LIMIT_SIZE_LIST = [
-  4,
-  8,
-  12,
-  16,
-  20,
-  24,
-];
+export const HISTORY_LIMIT_SIZE_LIST = [4, 8, 12, 16, 20, 24];
 
-export const API_LIST = [
-  API.GEMINI,
-  API.OPENAI,
-];
+export const API_LIST = [API.GEMINI, API.OPENAI];
 
 export const API_MODEL_LIST = {
   [API.GEMINI.value]: [
     GEMINI.GEMINI_PRO_VISION,
     GEMINI.GEMINI_1_5_FLASH,
     GEMINI.GEMINI_1_5_PRO,
-    MORE.CUSTOM,
+    MORE.CUSTOM
   ],
-  [API.OPENAI.value]: [
-    OPENAI.GPT_4O,
-    OPENAI.GPT_4,
-    OPENAI.GPT_4_TURBO,
-    MORE.CUSTOM,
-  ],
+  [API.OPENAI.value]: [OPENAI.GPT_4O, OPENAI.GPT_4, OPENAI.GPT_4_TURBO, MORE.CUSTOM]
 };
 
 export const TOOLTIP = {
@@ -75,7 +60,7 @@ export const TOOLTIP = {
   API_MODEL: 'Choose the AI model to use.',
   API_MODEL_USE_LATEST: 'Using the latest update of the model or not.',
   API_MODEL_NAME: 'In case the AI model is not available in the list yet, please fill it out here.',
-  API_KEY: 'X'
+  API_KEY: 'A unique identifier that allows you to authenticate and access their services.'
 };
 
 export const DEFAULT: DefaultStorage = {
@@ -85,12 +70,12 @@ export const DEFAULT: DefaultStorage = {
   apiInfo: {
     [API.GEMINI.value]: {
       apiModel: GEMINI.GEMINI_1_5_FLASH.value,
-      useLatest: true,
+      useLatest: true
     },
     [API.OPENAI.value]: {
-      apiModel: OPENAI.GPT_4O.value,
-    },
+      apiModel: OPENAI.GPT_4O.value
+    }
   },
   image: HELLO_WORLD_IMAGE,
-  historyLimitSize: 16,
-}
+  historyLimitSize: 16
+};

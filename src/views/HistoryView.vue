@@ -45,7 +45,7 @@ const clearLoading = ref<boolean>(false);
 const clear = async () => {
   clearLoading.value = true;
   await clearChromeStorageHistory();
-  histories.value = [];
+  await fetchData();
   clearLoading.value = false;
 };
 </script>

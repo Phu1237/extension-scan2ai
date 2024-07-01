@@ -1,15 +1,21 @@
-import type { Storage, StorageHistoryItem } from "@/types/storage";
-import { CHROME_STORAGE } from "@/constants/common";
-import { DEFAULT } from "@/constants/setting";
-import useCommon from "./usecommon";
+import type { Storage, StorageHistoryItem } from '@/types/storage';
+import { CHROME_STORAGE } from '@/constants/common';
+import { DEFAULT } from '@/constants/setting';
+import useCommon from './usecommon';
 
 export default function useChromeStorage() {
   const { log } = useCommon();
 
   const fetchChromeStorage = () => {
-    return Promise.all([getChromeStorage(CHROME_STORAGE.LOCAL), getChromeStorage(CHROME_STORAGE.SYNC)]);
-  }
-  const getChromeStorage = (storage: string, keys: Array<string> | null = null): Promise<Storage> => {
+    return Promise.all([
+      getChromeStorage(CHROME_STORAGE.LOCAL),
+      getChromeStorage(CHROME_STORAGE.SYNC)
+    ]);
+  };
+  const getChromeStorage = (
+    storage: string,
+    keys: Array<string> | null = null
+  ): Promise<Storage> => {
     return new Promise((resolve, reject) => {
       switch (storage) {
         case 'local':
@@ -26,7 +32,7 @@ export default function useChromeStorage() {
           reject('Unsupported storage type');
       }
     });
-  }
+  };
   const setChromeStorage = (storage: string, items: Storage) => {
     switch (storage) {
       case 'local':
@@ -36,7 +42,7 @@ export default function useChromeStorage() {
       default:
         throw new Error('Unsupported storage type');
     }
-  }
+  };
   const clearChromeStorage = async (storage: string) => {
     switch (storage) {
       case 'local':
@@ -46,7 +52,7 @@ export default function useChromeStorage() {
       default:
         throw new Error('Unsupported storage type');
     }
-  }
+  };
   const pushChromeStorageHistory = async (item: StorageHistoryItem) => {
     const local = await getChromeStorage(CHROME_STORAGE.LOCAL, ['history']);
     const sync = await getChromeStorage(CHROME_STORAGE.SYNC, ['historyLimitSize']);
@@ -60,12 +66,39 @@ export default function useChromeStorage() {
     setChromeStorage(CHROME_STORAGE.LOCAL, {
       history: history
     });
-  }
+  };
   const clearChromeStorageHistory = async () => {
     return await setChromeStorage(CHROME_STORAGE.LOCAL, {
       history: []
     });
-  }
+  };
+  const pushChromeStorageExtraContent = async (content: string) => {
+    const sync = await getChromeStorage(CHROME_STORAGE.SYNC, ['extraContent']);
+    const extraContent = sync.extraContent ?? [];
+    extraContent.push(content);
+    return setChromeStorage(CHROME_STORAGE.SYNC, {
+      extraContent: extraContent
+    });
+  };
+  const removeChromeStorageExtraContent = async (content: string, removeIndex: number = -1) => {
+    const sync = await getChromeStorage(CHROME_STORAGE.SYNC, ['extraContent']);
+    const extraContent = sync.extraContent ?? [];
+    const rIndex = removeIndex > -1 ? removeIndex : extraContent.indexOf(content);
+    if (rIndex > -1) {
+      console.log(rIndex);
+      extraContent.splice(rIndex, 1);
+    }
+    console.log(extraContent);
+
+    return setChromeStorage(CHROME_STORAGE.SYNC, {
+      extraContent: extraContent
+    });
+  };
+  const clearChromeStorageExtraContent = async () => {
+    return await setChromeStorage(CHROME_STORAGE.LOCAL, {
+      extraContent: []
+    });
+  };
 
   return {
     fetchChromeStorage,
@@ -74,5 +107,8 @@ export default function useChromeStorage() {
     clearChromeStorage,
     pushChromeStorageHistory,
     clearChromeStorageHistory,
-  }
+    pushChromeStorageExtraContent,
+    removeChromeStorageExtraContent,
+    clearChromeStorageExtraContent
+  };
 }

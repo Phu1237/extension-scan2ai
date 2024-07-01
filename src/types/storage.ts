@@ -16,6 +16,7 @@ export interface Storage {
   image?: string;
   history?: StorageHistoryItem[];
   historyLimitSize?: number;
+  extraContent?: Array<string>;
 }
 
 export interface StorageAPIInfo {

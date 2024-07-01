@@ -39,7 +39,10 @@ import {
   VIcon,
   VCombobox,
   VCheckboxBtn,
-  VTextField
+  VTextField,
+  VDialog,
+  VTextarea,
+  VTable,
 } from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
@@ -72,7 +75,10 @@ export default createVuetify({
     VIcon,
     VCombobox,
     VCheckboxBtn,
-    VTextField
+    VTextField,
+    VDialog,
+    VTextarea,
+    VTable,
   },
   directives
 });

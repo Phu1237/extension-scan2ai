@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer>
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-home" title="Home" value="home" to="/"></v-list-item>
+      <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard" to="/"></v-list-item>
       <v-list-item
         prepend-icon="mdi-history"
         title="History"

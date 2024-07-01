@@ -52,16 +52,24 @@ chrome.action.onClicked.addListener(async (tab) => {
     text: nextState,
   });
   if (nextState === 'ON') {
-    await chrome.scripting.executeScript(
-      {
-        target: { tabId: tab.id },
-        files: [
-          'html2canvas.min.js',
-          'content.js'
-        ],
-      },
-      () => { }
-    )
+    // Fix bug of import raw multiple times
+    // const variable is declared
+    if (prevState === '') {
+      await chrome.scripting.executeScript(
+        {
+          target: { tabId: tab.id },
+          files: [
+            'html2canvas.min.js',
+            'content.js'
+          ],
+        },
+        () => { }
+      )
+    } else {
+      chrome.tabs.sendMessage(tab.id, {
+        action: 'reinit'
+      });
+    }
   } else {
     chrome.tabs.sendMessage(tab.id, {
       action: 'destroy'

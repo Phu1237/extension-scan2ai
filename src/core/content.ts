@@ -6,17 +6,23 @@ import useSelecting from './selecting';
 
 const { isFullPage, capturePlace, captureType } = captureChromeAPIVisibleContent();
 const { selectingDragAndDrop, selectingClickToStartAndEnd } = useSelecting();
-const { init, destroy } = selectingDragAndDrop();
+const { init: initSelecting, destroy: destroySelecting } = selectingDragAndDrop();
 
 function onChromeMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: () => any) {
   console.log('listen', request);
-  if (request.result === 'selected') {
-    const img = request.value.result;
-    const x = request.value.x;
-    const y = request.value.y;
-    const width = request.value.width;
-    const height = request.value.height;
-    crop(img, x, y, width, height);
+  if (request.result) {
+    if (request.result === 'selected') {
+      const img = request.value.result;
+      const x = request.value.x;
+      const y = request.value.y;
+      const width = request.value.width;
+      const height = request.value.height;
+      crop(img, x, y, width, height);
+    }
+    return;
+  }
+  if (request.action === 'reinit') {
+    init();
   } else if (request.action === 'destroy') {
     document.getElementById('scan2ai')?.remove();
     destroy();
@@ -49,35 +55,38 @@ function initExtension() {
   extension.appendChild(html);
   document.body.appendChild(extension);
 }
-initExtension();
 
 const fullpage = isFullPage;
 
-init({
-  window: window,
-  document: document,
-  onSelectingStart: () => {
-    console.log('onSelectingStart');
-    if (fullpage) {
-      //
-    } else {
-      document.body.style.overflow = 'hidden';
+function init() {
+  initExtension();
+  initSelecting({
+    window: window,
+    document: document,
+    onSelectingStart: () => {
+      console.log('onSelectingStart');
+      if (fullpage) {
+        //
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
+    },
+    onSelectingEnd: (result) => {
+      console.log('onSelectingEnd', result);
+      const x = fullpage ? result.pageX : result.clientX;
+      const y = fullpage ? result.pageY : result.clientY;
+      const width = result.width;
+      const height = result.height;
+      selected({
+        capturePlace: capturePlace,
+        captureType: captureType
+      }, x, y, width, height);
+      if (fullpage) {
+        //
+      } else {
+        document.body.style.removeProperty('overflow');
+      }
     }
-  },
-  onSelectingEnd: (result) => {
-    console.log('onSelectingEnd', result);
-    const x = fullpage ? result.pageX : result.clientX;
-    const y = fullpage ? result.pageY : result.clientY;
-    const width = result.width;
-    const height = result.height;
-    selected({
-      capturePlace: capturePlace,
-      captureType: captureType
-    }, x, y, width, height);
-    if (fullpage) {
-      //
-    } else {
-      document.body.style.removeProperty('overflow');
-    }
-  }
-});
+  });
+}
+init();

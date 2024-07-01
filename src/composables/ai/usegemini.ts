@@ -34,7 +34,7 @@ export default function useGemini() {
         return content;
     }
   };
-  const makeRequest = (attributes: any, payload: any): Promise<Response> => {
+  const sendRequest = (attributes: any, payload: any): Promise<Response> => {
     let uri = API.GEMINI.uri;
     uri = uri.replace('{{api_model}}', attributes.api_model);
     const useLatest = attributes.use_latest ? '-latest' : '';
@@ -53,6 +53,6 @@ export default function useGemini() {
 
   return {
     buildRequestMessage,
-    makeRequest
+    sendRequest
   };
 }
