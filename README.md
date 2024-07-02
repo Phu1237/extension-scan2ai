@@ -30,7 +30,7 @@ Or you can download the released version [here](https://github.com/Phu1237/exten
 ### Requirements
 
 - [Nodejs](https://nodejs.org/) or [Yarn](https://yarnpkg.com/)
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (Recommended)
+- [VSCode](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (Recommended)
 
 ### Build
 
