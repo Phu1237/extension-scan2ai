@@ -1,39 +1,53 @@
-# scan2ai
+# Scan2AI
 
-This template should help get you started developing with Vue 3 in Vite.
+Discover a smarter way to interact with your screen! Scan2AI is a cutting-edge Chrome extension that empowers you to capture any area of your screen and send it to a powerful AI API for instant processing and insights. Whether you're analyzing data, translating text, or extracting information, Scan2AI makes it effortless and efficient.
 
-## Recommended IDE Setup
+## Features:
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Seamless Screen Capture: Easily capture any area of your screen with a few clicks.
+- AI Integration: Send captured images to a robust AI API for a variety of actions, including text recognition, translation, data extraction, and more.
+- User-Friendly Interface: Intuitive design for a smooth and hassle-free experience.
+- High Efficiency: Get instant results from the AI, enhancing your productivity and efficiency.
+- Secure & Private: Your data is processed securely, ensuring privacy and confidentiality.
+- Transform the way you interact with your screen. Download Scan2AI now and experience the power of AI at your fingertips!
 
-## Type Support for `.vue` Imports in TS
+## Download
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Get it from the extension store:
 
-## Customize configuration
+- [Chrome](#)
+- [Edge](#)
+- [Opera](#)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Or you can download the released version [here](https://github.com/Phu1237/extension-scan2ai/releases/latest).
 
-## Project Setup
+## Instructions
 
-```sh
-npm install
-```
+## How to build
 
-### Compile and Hot-Reload for Development
+### Requirements
 
-```sh
-npm run dev
-```
+- [Nodejs](https://nodejs.org/) or [Yarn](https://yarnpkg.com/)
+- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (Recommended)
 
-### Type-Check, Compile and Minify for Production
+### Build
 
-```sh
-npm run build
-```
+Run the following command:
 
-### Lint with [ESLint](https://eslint.org/)
+| |Production|Development|
+|-|-|-|
+|Npm|`npm run build`|`npm run build:dev`
+|Yarn|`yarn build`|`yarn build:dev`
 
-```sh
-npm run lint
-```
+Turn on the **developer mode** and move the "dist" folder to the **extensions page**.
+
+## Donations
+
+If you like my work, please consider buying me a coffee ☕
+
+- [Buy me a coffee](https://www.buymeacoffee.com/Phu1237)
+- [Momo](https://me.momo.vn/Phu1237)
+
+## Contributors
+
+Thanks to those people for helping me develop this extension:
