@@ -332,7 +332,6 @@ const test = async () => {
         content: imageObject
       }
     ]);
-    console.log('gemini message', messages);
     rawResult = await sendRequest(
       {
         api_model: apiModel.value?.trim(),

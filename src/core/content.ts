@@ -8,12 +8,27 @@ const { isFullPage, capturePlace, captureType } = captureChromeAPIVisibleContent
 const { selectingDragAndDrop, selectingClickToStartAndEnd } = useSelecting();
 const { init: initSelecting, destroy: destroySelecting } = selectingDragAndDrop();
 
+const log = (...args: any) => {
+  if (import.meta.env.MODE === 'development') {
+    if (args.length > 2) {
+      console.group(args[0]);
+      for (let i = 1; i < args.length; i++) {
+        console.log(args[i]);
+      }
+      console.groupEnd();
+      return;
+    }
+    console.log(...args);
+    return;
+  }
+};
+
 function onChromeMessage(
   request: any,
   sender: chrome.runtime.MessageSender,
   sendResponse: () => any
 ) {
-  console.log('listen', request);
+  log('listen', request);
   if (request.result) {
     if (request.result === 'selected') {
       const img = request.value.result;
@@ -68,7 +83,6 @@ function initExtension() {
     const selectAreaEl = document.getElementById('scan2ai-select-area')!;
     selectAreaEl.classList.add('hidden');
   });
-  console.log(document.querySelectorAll('[data-name="scan2ai-result-action"]'));
   document.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
     el.addEventListener('click', () => {
       chrome.runtime.sendMessage({
@@ -86,7 +100,7 @@ function init() {
     window: window,
     document: document,
     onSelectingStart: () => {
-      console.log('onSelectingStart');
+      log('onSelectingStart');
       if (fullpage) {
         //
       } else {
@@ -94,7 +108,7 @@ function init() {
       }
     },
     onSelectingEnd: (result) => {
-      console.log('onSelectingEnd', result);
+      log('onSelectingEnd', result);
       // if (fullpage) {
       //   //
       // } else {

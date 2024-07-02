@@ -1,5 +1,20 @@
 import type { ChromeMessageRequest } from '@/types/chromemessage';
 
+const log = (...args: any) => {
+  if (import.meta.env.MODE === 'development') {
+    if (args.length > 2) {
+      console.group(args[0]);
+      for (let i = 1; i < args.length; i++) {
+        console.log(args[i]);
+      }
+      console.groupEnd();
+      return;
+    }
+    console.log(...args);
+    return;
+  }
+};
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({
     text: 'OFF'
@@ -79,8 +94,8 @@ chrome.runtime.onMessage.addListener(async function (
   sender,
   sendResponse
 ) {
-  console.log(sender.tab ? 'from a content script:' + sender.tab : 'from the extension');
-  console.log('request', request);
+  log(sender.tab ? 'from a content script:' + sender.tab : 'from the extension');
+  log('request', request);
   switch (request.action) {
     case 'selected':
       if (request.attributes.capturePlace && request.attributes.capturePlace === 'background') {

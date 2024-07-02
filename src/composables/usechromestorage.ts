@@ -76,6 +76,7 @@ export default function useChromeStorage() {
     const sync = await getChromeStorage(CHROME_STORAGE.SYNC, ['extraContent']);
     const extraContent = sync.extraContent ?? [];
     extraContent.push(content);
+
     return setChromeStorage(CHROME_STORAGE.SYNC, {
       extraContent: extraContent
     });
@@ -85,10 +86,8 @@ export default function useChromeStorage() {
     const extraContent = sync.extraContent ?? [];
     const rIndex = removeIndex > -1 ? removeIndex : extraContent.indexOf(content);
     if (rIndex > -1) {
-      console.log(rIndex);
       extraContent.splice(rIndex, 1);
     }
-    console.log(extraContent);
 
     return setChromeStorage(CHROME_STORAGE.SYNC, {
       extraContent: extraContent
