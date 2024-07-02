@@ -1,5 +1,7 @@
 # Scan2AI
 
+![logo](public/icons/icon.png)
+
 Discover a smarter way to interact with your screen! Scan2AI is a cutting-edge Chrome extension that empowers you to capture any area of your screen and send it to a powerful AI API for instant processing and insights. Whether you're analyzing data, translating text, or extracting information, Scan2AI makes it effortless and efficient.
 
 ## Features:
