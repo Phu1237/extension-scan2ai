@@ -6,6 +6,6 @@ export default function () {
   return {
     isFullPage: isFullPage,
     capturePlace: capturePlace,
-    captureType: captureType,
+    captureType: captureType
   };
 }

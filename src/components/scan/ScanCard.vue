@@ -28,7 +28,7 @@
     </v-card-subtitle>
 
     <v-card-actions>
-      <v-btn color="orange-lighten-2" text="RAW RESULT" disabled></v-btn>
+      <v-btn color="orange-lighten-2" text="SETTING" @click="onClickSetting"></v-btn>
 
       <v-spacer></v-spacer>
 
@@ -62,7 +62,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, type PropType } from 'vue';
+import { ref } from 'vue';
+import router from '@/router';
+import type { PropType } from 'vue';
 import useAI from '@/composables/useai';
 import type { Storage } from '@/types/storage';
 
@@ -96,22 +98,27 @@ const onClickAction = async (action: string) => {
   clickActionLoading.value = true;
   responseResult.value = 'Loading...';
   responseSuccess.value = true;
-  const response = await sendRequest(
-    {
-      local: props.chromeLocal,
-      sync: props.chromeSync
-    },
-    action
-  );
-  const { result, success } = await handleResponse(
-    {
-      local: props.chromeLocal,
-      sync: props.chromeSync
-    },
-    response
-  );
-  responseResult.value = result;
-  responseSuccess.value = success;
+  try {
+    const response = await sendRequest(
+      {
+        local: props.chromeLocal,
+        sync: props.chromeSync
+      },
+      action
+    );
+    const { result, success } = await handleResponse(
+      {
+        local: props.chromeLocal,
+        sync: props.chromeSync
+      },
+      response
+    );
+    responseResult.value = result;
+    responseSuccess.value = success;
+  } catch (err) {
+    responseResult.value = String(err);
+    responseSuccess.value = false;
+  }
   clickActionLoading.value = false;
 };
 const customAction = ref<string>('');
@@ -125,22 +132,33 @@ const onClickActionCustom = async () => {
   clickActionLoading.value = true;
   responseResult.value = 'Loading...';
   responseSuccess.value = true;
-  const response = await sendRequest(
-    {
-      local: props.chromeLocal,
-      sync: props.chromeSync
-    },
-    customAction.value
-  );
-  const { result, success } = await handleResponse(
-    {
-      local: props.chromeLocal,
-      sync: props.chromeSync
-    },
-    response
-  );
-  responseResult.value = result;
-  responseSuccess.value = success;
+  try {
+    const response = await sendRequest(
+      {
+        local: props.chromeLocal,
+        sync: props.chromeSync
+      },
+      customAction.value
+    );
+    const { result, success } = await handleResponse(
+      {
+        local: props.chromeLocal,
+        sync: props.chromeSync
+      },
+      response
+    );
+    responseResult.value = result;
+    responseSuccess.value = success;
+    return;
+  } catch (err) {
+    responseResult.value = String(err);
+    responseSuccess.value = false;
+  }
   clickActionLoading.value = false;
+};
+
+const onClickSetting = () => {
+  // Implement your setting logic here
+  router.push({ name: 'setting' });
 };
 </script>

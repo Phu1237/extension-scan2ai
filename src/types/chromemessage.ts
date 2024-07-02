@@ -1,5 +1,5 @@
 export interface ChromeMessageRequest {
-  action: string,
-  attributes?: any,
-  value?: any
+  action: string;
+  attributes?: any;
+  value?: any;
 }

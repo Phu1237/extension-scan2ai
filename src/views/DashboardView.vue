@@ -1,7 +1,12 @@
 <template>
   <h1>Dashboard</h1>
   <div class="d-flex flex-column ga-3">
-    <ScanCard :image="image" :actions="actions" />
+    <ScanCard
+      :chrome-local="chromeLocal"
+      :chrome-sync="chromeSync"
+      :image="image"
+      :actions="actions"
+    />
     <v-divider />
     <v-text-field
       label="New action"
@@ -43,6 +48,7 @@ import { onBeforeMount, ref } from 'vue';
 import type { Storage } from '@/types/storage';
 import { CHROME_STORAGE } from '@/constants/common';
 import { DEFAULT_EXTRA_CONTENTS } from '@/constants/extracontent';
+import { HELLO_WORLD_IMAGE } from '@/constants/sample';
 import useChromeStorage from '@/composables/usechromestorage';
 import ScanCard from '@/components/scan/ScanCard.vue';
 
@@ -56,7 +62,7 @@ const actions = ref<Array<string>>([]);
 onBeforeMount(async () => {
   const local = await getChromeStorage(CHROME_STORAGE.LOCAL);
   chromeLocal.value = local;
-  image.value = local.image ?? '';
+  image.value = local.image ?? HELLO_WORLD_IMAGE;
   const sync = await getChromeStorage(CHROME_STORAGE.SYNC);
   chromeSync.value = sync;
   actions.value.push(...DEFAULT_EXTRA_CONTENTS, ...(sync.extraContent ?? []));

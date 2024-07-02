@@ -42,7 +42,7 @@ import {
   VTextField,
   VDialog,
   VTextarea,
-  VTable,
+  VTable
 } from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
@@ -78,7 +78,7 @@ export default createVuetify({
     VTextField,
     VDialog,
     VTextarea,
-    VTable,
+    VTable
   },
   directives
 });

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -19,6 +19,6 @@ const router = createRouter({
       component: () => import('../views/SettingView.vue')
     }
   ]
-})
+});
 
-export default router
+export default router;

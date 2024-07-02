@@ -129,7 +129,7 @@
       </template>
     </v-text-field>
     <v-text-field
-      label="API key (Optional)"
+      :label="'API key ' + (oldApiKey === '' ? '(*)' : '(Optional)')"
       hint="hint"
       class="mb-2"
       :placeholder="apiKeyPlaceholder"
@@ -165,10 +165,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onBeforeMount, ref } from 'vue';
-import useCommon from '@/composables/usecommon';
-import useAI from '@/composables/useai';
-import useChromeStorage from '@/composables/usechromestorage';
+import { onBeforeMount, ref, computed, watch } from 'vue';
+import type { Storage } from '@/types/storage';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
   TOOLTIP,
@@ -179,7 +177,9 @@ import {
   API_LIST,
   API_MODEL_LIST
 } from '@/constants/setting';
-import type { Storage } from '@/types/storage';
+import useCommon from '@/composables/usecommon';
+import useAI from '@/composables/useai';
+import useChromeStorage from '@/composables/usechromestorage';
 
 const { isDev, log, getStorageUsage, base64ImageToImageObject } = useCommon();
 const { getAIName, maskAPIKey } = useAI();
@@ -264,6 +264,7 @@ const apiHint = computed(() => {
 const onClearAPIKey = async () => {
   if (!api.value) return '';
   apiKey.value = '';
+  oldApiKey.value = '';
   await setChromeStorage(CHROME_STORAGE.LOCAL, {
     apiKey: {
       ...chromeLocal.value?.apiKey,
@@ -336,7 +337,7 @@ const test = async () => {
       {
         api_model: apiModel.value?.trim(),
         use_latest: apiModelUseLatest.value,
-        api_key: apiKey.value?.trim()
+        api_key: oldApiKey.value?.trim()
       },
       {
         messages: messages
@@ -361,7 +362,7 @@ const test = async () => {
     rawResult = await sendRequest(
       {
         api_model: apiModel.value?.trim(),
-        api_key: apiKey.value?.trim()
+        api_key: oldApiKey.value?.trim()
       },
       {
         messages: messages

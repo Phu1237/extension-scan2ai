@@ -39,10 +39,7 @@ export default function useAI() {
         !sync.apiInfo ||
         !sync.apiInfo[sync.api]
       ) {
-        reject({
-          result: 'Missing required API settings',
-          success: false
-        });
+        reject('Missing required API settings');
         return;
       }
       const api = sync.api;
@@ -94,10 +91,7 @@ export default function useAI() {
         ).then((response) => resolve(response));
         return;
       }
-      reject({
-        result: 'Unsupported Assistent API or unexpected error',
-        success: false
-      });
+      reject('Unsupported Assistent API or unexpected error');
     });
   };
   const handleResponse = async (storages: ChromeStorages, response: Response) => {

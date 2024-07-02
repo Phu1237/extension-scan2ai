@@ -3,21 +3,25 @@ export const API = {
     name: 'Gemini',
     value: 'gemini',
     hint: {
-      model: 'Gemini Models Document: <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">here</a>',
-      api_key: 'Get Gemini API key <a href="https://platform.openai.com/api-keys" target="_blank">here</a>',
+      model:
+        'Gemini Models Document: <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">here</a>',
+      api_key:
+        'Get Gemini API key <a href="https://platform.openai.com/api-keys" target="_blank">here</a>'
     },
-    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{use_latest}}:generateContent?key={{api_key}}',
+    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{use_latest}}:generateContent?key={{api_key}}'
   },
   OPENAI: {
     name: 'OpenAI',
     value: 'openai',
     hint: {
-      model: 'OpenAI Document: <a href="https://platform.openai.com/docs/models" target="_blank">here</a>',
-      api_key: 'Get OpenAI API key <a href="https://aistudio.google.com/app/apikey" target="_blank">here</a>',
+      model:
+        'OpenAI Document: <a href="https://platform.openai.com/docs/models" target="_blank">here</a>',
+      api_key:
+        'Get OpenAI API key <a href="https://aistudio.google.com/app/apikey" target="_blank">here</a>'
     },
     uri: 'https://api.openai.com/v1/chat/completions'
-  },
-}
+  }
+};
 
 // https://ai.google.dev/gemini-api/docs/models/gemini
 // https://platform.openai.com/api-keys
@@ -41,8 +45,8 @@ export const GEMINI = {
   GEMINI_1_5_PRO: {
     name: 'Gemini 1.5 Pro',
     value: 'gemini-1.5-pro'
-  },
-}
+  }
+};
 
 // https://platform.openai.com/docs/models
 // https://aistudio.google.com/app/apikey
@@ -95,11 +99,11 @@ export const OPENAI = {
     name: 'Text Moderation Latest',
     value: 'text-moderation-latest'
   }
-}
+};
 
 export const MORE = {
   CUSTOM: {
     name: 'Custom',
     value: 'custom'
   }
-}
+};

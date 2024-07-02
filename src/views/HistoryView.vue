@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref } from 'vue';
-import { CHROME_STORAGE } from '@/constants/common';
+import { onBeforeMount, ref, computed } from 'vue';
 import type { StorageHistoryItem } from '@/types/storage';
+import { CHROME_STORAGE } from '@/constants/common';
 import useCommon from '@/composables/usecommon';
 import useChromeStorage from '@/composables/usechromestorage';
 import HistoryItem from '@/components/history/HistoryItem.vue';
