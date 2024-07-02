@@ -1,0 +1,27 @@
+<div id="scan2ai-select">
+  <div id="scan2ai-select-area" class="hidden"></div>
+  <img id="scan2ai-img" class="hidden" />
+</div>
+<div id="scan2ai-result" class="hidden">
+  <div id="scan2ai-backdrop"></div>
+  <div id="scan2ai-result-dialog">
+    <div style="width: fit-content; padding: 5px; background: white">
+      <div class="scan2ai-result-header">
+        Result<button id="scan2ai-result-dialog-close">x</button>
+      </div>
+      <div class="scan2ai-result-body">
+        <canvas id="canvas"></canvas>
+      </div>
+      <div class="scan2ai-result-footer">
+        <div style="display: flex; flex: 1; column-gap: 5px">
+          <button data-name="scan2ai-result-action" data-action="off">Turn off</button>
+          <button data-name="scan2ai-result-action" data-action="history">History</button>
+          <button data-name="scan2ai-result-action" data-action="setting">Setting</button>
+        </div>
+        <div style="display: flex; flex: 1; justify-content: end">
+          <button data-name="scan2ai-result-action" data-action="scan">Scan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

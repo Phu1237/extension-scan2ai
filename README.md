@@ -1,39 +1,65 @@
-# scan2ai
+# Scan2AI
 
-This template should help get you started developing with Vue 3 in Vite.
+![logo](public/icons/icon.png)
 
-## Recommended IDE Setup
+Discover a smarter way to interact with your screen! Scan2AI is a cutting-edge Chrome extension that empowers you to capture any area of your screen and send it to a powerful AI API for instant processing and insights. Whether you're analyzing data, translating text, or extracting information, Scan2AI makes it effortless and efficient.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features:
 
-## Type Support for `.vue` Imports in TS
+- Seamless Screen Capture: Easily capture any area of your screen with a few clicks.
+- AI Integration: Send captured images to a robust AI API for a variety of actions, including text recognition, translation, data extraction, and more.
+- User-Friendly Interface: Intuitive design for a smooth and hassle-free experience.
+- High Efficiency: Get instant results from the AI, enhancing your productivity and efficiency.
+- Secure & Private: Your data is processed securely, ensuring privacy and confidentiality.
+- Transform the way you interact with your screen. Download Scan2AI now and experience the power of AI at your fingertips!
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Download
 
-## Customize configuration
+Get it from the extension store:
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- [Chrome](#)
+- [Edge](#)
+- [Opera](#)
 
-## Project Setup
+Or you can download the released version [here](https://github.com/Phu1237/extension-scan2ai/releases/latest).
 
-```sh
-npm install
-```
+## Instructions
 
-### Compile and Hot-Reload for Development
+- Video:
+  - [Youtube](https://youtu.be/w49YuDG4jO8)
+- Screenshots:
+![screenshot](screenshots/1.png)
+![screenshot](screenshots/2.png)
+![screenshot](screenshots/3.png)
+![screenshot](screenshots/4.png)
+![screenshot](screenshots/5.png)
+![screenshot](screenshots/6.png)
 
-```sh
-npm run dev
-```
+## How to build
 
-### Type-Check, Compile and Minify for Production
+### Requirements
 
-```sh
-npm run build
-```
+- [Nodejs](https://nodejs.org/) or [Yarn](https://yarnpkg.com/)
+- [VSCode](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (Recommended)
 
-### Lint with [ESLint](https://eslint.org/)
+### Build
 
-```sh
-npm run lint
-```
+Run the following command:
+
+| |Production|Development|
+|-|-|-|
+|Npm|`npm run build`|`npm run build:dev`
+|Yarn|`yarn build`|`yarn build:dev`
+
+Turn on the **developer mode** and move the "dist" folder to the **extensions page**.
+
+## Donations
+
+If you like my work, please consider buying me a coffee ☕
+
+- [Buy me a coffee](https://www.buymeacoffee.com/Phu1237)
+- [Momo](https://me.momo.vn/Phu1237)
+
+## Contributors
+
+Thanks to those people for helping me develop this extension:

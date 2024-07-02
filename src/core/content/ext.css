@@ -1,0 +1,76 @@
+#scan2ai-html {
+    color: black;
+}
+
+#scan2ai-html canvas {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+#scan2ai-html .hidden {
+  display: none !important;
+}
+
+#scan2ai-html #scan2ai-select {
+  height: 100%;
+}
+
+#scan2ai-html #scan2ai-select,
+#scan2ai-html #scan2ai-select * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: crosshair;
+}
+
+#scan2ai-html #scan2ai-select-area {
+  position: absolute;
+  background: #00000050;
+  z-index: 1000;
+}
+
+#scan2ai-html #scan2ai-result {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-backdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #00000050;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog {
+  z-index: 2;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-header {
+  font-size: large;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog #scan2ai-result-dialog-close {
+  background: transparent;
+  border: none;
+  float: right;
+  color: black;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-header,
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-body {
+  border-bottom: 1px solid;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+}
+
+#scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-footer {
+  display: flex;
+}
