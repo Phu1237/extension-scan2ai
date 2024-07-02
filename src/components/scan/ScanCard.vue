@@ -106,13 +106,14 @@ const onClickAction = async (action: string) => {
       },
       action
     );
-    const { result, success } = await handleResponse(
+    // TODO: Fix later
+    const { result, success } = (await handleResponse(
       {
         local: props.chromeLocal,
         sync: props.chromeSync
       },
       response
-    );
+    )) as any;
     responseResult.value = result;
     responseSuccess.value = success;
   } catch (err) {
@@ -140,13 +141,14 @@ const onClickActionCustom = async () => {
       },
       customAction.value
     );
-    const { result, success } = await handleResponse(
+    // TODO: Fix later
+    const { result, success } = (await handleResponse(
       {
         local: props.chromeLocal,
         sync: props.chromeSync
       },
       response
-    );
+    )) as any;
     responseResult.value = result;
     responseSuccess.value = success;
     return;

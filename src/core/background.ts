@@ -15,41 +15,41 @@ const log = (...args: any) => {
   }
 };
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.action.setBadgeText({
-    text: 'OFF'
-  });
-});
+// chrome.runtime.onInstalled.addListener(() => {
+//   chrome.action.setBadgeText({
+//     text: 'OFF'
+//   });
+// });
 
-async function captureTab(tab) {
-  return await chrome.tabs.captureVisibleTab((dataUrl) => {
-    // var img = document.createElement('img');
-    // img.src = dataUrl;
-    // img.onload = () => {
-    //   let canvas = document.createElement('canvas');
-    //   canvas.width = img.width;
-    //   canvas.height = document.body.scrollHeight;
-    //   let ctx = canvas.getContext('2d');
-    //   ctx.drawImage(img, 0, 0, img.width, img.height);
-    //   chrome.tabs.executeScript(null, {
-    //     code: "window.scrollTo(0, document.body.scrollHeight)"
-    //   }, () => {
-    //     setTimeout(function () {
-    //       chrome.tabs.captureVisibleTab(null, { format: "png" }, function (dataUrl) {
-    //         var img2 = document.createElement('img');
-    //         img2.src = dataUrl;
-    //         img2.onload = function () {
-    //           ctx.drawImage(img2, 0, img.height, img2.width, img2.height);
-    //           var finalDataUrl = canvas.toDataURL("image/png");
-    //           window.open(finalDataUrl, '_blank');
-    //           // Use finalDataUrl as needed
-    //         }
-    //       });
-    //     }, 500)
-    //   })
-    // }
-  });
-}
+// async function captureTab(tab) {
+//   return await chrome.tabs.captureVisibleTab((dataUrl) => {
+// var img = document.createElement('img');
+// img.src = dataUrl;
+// img.onload = () => {
+//   let canvas = document.createElement('canvas');
+//   canvas.width = img.width;
+//   canvas.height = document.body.scrollHeight;
+//   let ctx = canvas.getContext('2d');
+//   ctx.drawImage(img, 0, 0, img.width, img.height);
+//   chrome.tabs.executeScript(null, {
+//     code: "window.scrollTo(0, document.body.scrollHeight)"
+//   }, () => {
+//     setTimeout(function () {
+//       chrome.tabs.captureVisibleTab(null, { format: "png" }, function (dataUrl) {
+//         var img2 = document.createElement('img');
+//         img2.src = dataUrl;
+//         img2.onload = function () {
+//           ctx.drawImage(img2, 0, img.height, img2.width, img2.height);
+//           var finalDataUrl = canvas.toDataURL("image/png");
+//           window.open(finalDataUrl, '_blank');
+//           // Use finalDataUrl as needed
+//         }
+//       });
+//     }, 500)
+//   })
+// }
+//   });
+// }
 
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab.id) return;
@@ -72,7 +72,10 @@ chrome.action.onClicked.addListener(async (tab) => {
       await chrome.scripting.executeScript(
         {
           target: { tabId: tab.id },
-          files: ['html2canvas.min.js', 'content.js']
+          files: [
+            // 'html2canvas.min.js',
+            'content.js'
+          ]
         },
         () => {}
       );

@@ -30,7 +30,5 @@
         "storage"
     ],
     "optional_permissions": [
-        "clipboardRead",
-        "unlimitedStorage"
     ]
 }
