@@ -25,6 +25,16 @@ Or you can download the released version [here](https://github.com/Phu1237/exten
 
 ## Instructions
 
+- Video:
+  - [Youtube](https://youtu.be/w49YuDG4jO8)
+- Screenshots:
+![screenshot](screenshots/1.png)
+![screenshot](screenshots/2.png)
+![screenshot](screenshots/3.png)
+![screenshot](screenshots/4.png)
+![screenshot](screenshots/5.png)
+![screenshot](screenshots/6.png)
+
 ## How to build
 
 ### Requirements

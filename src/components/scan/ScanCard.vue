@@ -10,10 +10,11 @@
         hint="If you want to run a custom action without add to the action list, you can use this."
         class="my-2"
         variant="outlined"
-        :append-icon="clickActionLoading ? 'send-lock' : 'mdi-send'"
+        :append-icon="clickActionLoading ? 'mdi-send-lock' : 'mdi-send'"
         @click:append="onClickActionCustom"
         @keydown.enter.prevent="onClickActionCustom"
         v-model="customAction"
+        :loading="clickActionLoading"
         persistent-hint
       ></v-text-field>
       <v-textarea
@@ -28,7 +29,7 @@
     </v-card-subtitle>
 
     <v-card-actions>
-      <v-btn color="orange-lighten-2" text="SETTING" @click="onClickSetting"></v-btn>
+      <v-btn color="orange-lighten-2" text="GO TO SETTING" @click="onClickSetting"></v-btn>
 
       <v-spacer></v-spacer>
 
@@ -151,7 +152,6 @@ const onClickActionCustom = async () => {
     )) as any;
     responseResult.value = result;
     responseSuccess.value = success;
-    return;
   } catch (err) {
     responseResult.value = String(err);
     responseSuccess.value = false;

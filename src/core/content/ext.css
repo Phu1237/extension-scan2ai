@@ -1,3 +1,7 @@
+#scan2ai-html {
+    color: black;
+}
+
 #scan2ai-html canvas {
   display: block;
   width: auto;
@@ -57,6 +61,7 @@
   background: transparent;
   border: none;
   float: right;
+  color: black;
 }
 
 #scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-header,

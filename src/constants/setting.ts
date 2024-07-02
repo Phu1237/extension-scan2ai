@@ -34,7 +34,10 @@ export const SELECTING_METHOD_LIST = [
   },
   {
     name: 'Click to Start and End',
-    value: SELECTING_METHOD_VALUE.MOUSE_CLICK_TO_START_AND_END
+    value: SELECTING_METHOD_VALUE.MOUSE_CLICK_TO_START_AND_END,
+    props: {
+      disabled: true
+    }
   }
 ];
 
