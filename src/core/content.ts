@@ -1,6 +1,6 @@
 import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
-import { crop, selected, getBodyHeight } from './content/helpers'
+import { crop, selected, getBodyHeight } from './content/helpers';
 import captureChromeAPIVisibleContent from './capture/chrome-api-visible-content';
 import useSelecting from './selecting';
 
@@ -8,7 +8,11 @@ const { isFullPage, capturePlace, captureType } = captureChromeAPIVisibleContent
 const { selectingDragAndDrop, selectingClickToStartAndEnd } = useSelecting();
 const { init: initSelecting, destroy: destroySelecting } = selectingDragAndDrop();
 
-function onChromeMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: () => any) {
+function onChromeMessage(
+  request: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: () => any
+) {
   console.log('listen', request);
   if (request.result) {
     if (request.result === 'selected') {
@@ -18,6 +22,9 @@ function onChromeMessage(request: any, sender: chrome.runtime.MessageSender, sen
       const width = request.value.width;
       const height = request.value.height;
       crop(img, x, y, width, height);
+    } else if (request.result === 'crop') {
+      const resultEl = document.getElementById('scan2ai-result')!;
+      resultEl.classList.remove('hidden');
     }
     return;
   }
@@ -25,15 +32,12 @@ function onChromeMessage(request: any, sender: chrome.runtime.MessageSender, sen
     init();
   } else if (request.action === 'destroy') {
     document.getElementById('scan2ai')?.remove();
-    destroy();
-    chrome.runtime.onMessage.removeListener(onChromeMessage);
+    destroySelecting();
+    // chrome.runtime.onMessage.removeListener(onChromeMessage);
   }
 }
 
 chrome.runtime.onMessage.addListener(onChromeMessage);
-chrome.storage.sync.get(null, (result) => {
-  console.log(result);
-});
 
 function initExtension() {
   const extension = document.createElement('div');
@@ -44,16 +48,34 @@ function initExtension() {
   extension.appendChild(style);
   const html = document.createElement('div');
   html.id = 'scan2ai-html';
+  html.innerHTML = extHtml;
   html.style.position = 'absolute';
   html.style.top = '0';
   html.style.left = '0';
   html.style.width = '100%';
   html.style.height = getBodyHeight() + 'px';
-  html.style.zIndex = '9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999';
-  html.innerHTML = extHtml;
+  html.style.zIndex = '9999';
 
   extension.appendChild(html);
   document.body.appendChild(extension);
+  // init button events
+  document.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
+    const resultEl = document.getElementById('scan2ai-result')!;
+    resultEl.classList.add('hidden');
+    const selectEl = document.getElementById('scan2ai-select')!;
+    selectEl.classList.remove('hidden');
+    document.body.style.removeProperty('overflow');
+    const selectAreaEl = document.getElementById('scan2ai-select-area')!;
+    selectAreaEl.classList.add('hidden');
+  });
+  console.log(document.querySelectorAll('[data-name="scan2ai-result-action"]'));
+  document.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      chrome.runtime.sendMessage({
+        action: el.getAttribute('data-action')
+      });
+    });
+  });
 }
 
 const fullpage = isFullPage;
@@ -73,19 +95,27 @@ function init() {
     },
     onSelectingEnd: (result) => {
       console.log('onSelectingEnd', result);
+      // if (fullpage) {
+      //   //
+      // } else {
+      //   document.body.style.removeProperty('overflow');
+      // }
+      const selectEl = document.getElementById('scan2ai-select')!;
+      selectEl.classList.add('hidden');
       const x = fullpage ? result.pageX : result.clientX;
       const y = fullpage ? result.pageY : result.clientY;
       const width = result.width;
       const height = result.height;
-      selected({
-        capturePlace: capturePlace,
-        captureType: captureType
-      }, x, y, width, height);
-      if (fullpage) {
-        //
-      } else {
-        document.body.style.removeProperty('overflow');
-      }
+      selected(
+        {
+          capturePlace: capturePlace,
+          captureType: captureType
+        },
+        x,
+        y,
+        width,
+        height
+      );
     }
   });
 }

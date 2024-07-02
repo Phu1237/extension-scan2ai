@@ -9,8 +9,7 @@ export default function () {
   let width: number | null = null;
   let height: number | null = null;
 
-  let options: Options = {
-  }
+  let options: Options = {};
 
   function clearSelection() {
     clientX = null;
@@ -24,22 +23,23 @@ export default function () {
     // Remove selection to prevent selection bug
     if (selection.empty) {
       selection.empty();
-    } else if (selection.removeAllRanges) {  // Firefox
+    } else if (selection.removeAllRanges) {
+      // Firefox
       selection.removeAllRanges();
     }
   }
 
   function initEventListeners(): void {
-    document.addEventListener('mousemove', onMouseUpdate, false);
-    document.addEventListener('mouseenter', onMouseUpdate, false);
-    document.addEventListener('mousedown', onMouseDown, false);
-    document.addEventListener('mouseup', onMouseUp, false);
+    document.getElementById('scan2ai-select')?.addEventListener('mousemove', onMouseUpdate, false);
+    document.getElementById('scan2ai-select')?.addEventListener('mouseenter', onMouseUpdate, false);
+    document.getElementById('scan2ai-select')?.addEventListener('mousedown', onMouseDown, false);
+    document.getElementById('scan2ai-select')?.addEventListener('mouseup', onMouseUp, false);
   }
   function destroyEventListeners(): void {
-    document.removeEventListener('mousemove', onMouseUpdate);
-    document.removeEventListener('mouseenter', onMouseUpdate);
-    document.removeEventListener('mousedown', onMouseDown);
-    document.removeEventListener('mouseup', onMouseUp);
+    document.getElementById('scan2ai-select')?.removeEventListener('mousemove', onMouseUpdate);
+    document.getElementById('scan2ai-select')?.removeEventListener('mouseenter', onMouseUpdate);
+    document.getElementById('scan2ai-select')?.removeEventListener('mousedown', onMouseDown);
+    document.getElementById('scan2ai-select')?.removeEventListener('mouseup', onMouseUp);
   }
 
   function onMouseDown(event: MouseEvent): void {
@@ -49,7 +49,7 @@ export default function () {
     clientY = event.clientY;
     pageX = event.pageX;
     pageY = event.pageY;
-    const select = document.getElementById('scan2ai-select')!;
+    const select = document.getElementById('scan2ai-select-area')!;
     select.classList.remove('hidden');
     const result = document.getElementById('scan2ai-result')!;
     result.classList.add('hidden');
@@ -59,7 +59,7 @@ export default function () {
 
   function onMouseUpdate(event: MouseEvent): void {
     if (!isSelecting || !pageX || !pageY) return;
-    const select = document.getElementById('scan2ai-select')!;
+    const select = document.getElementById('scan2ai-select-area')!;
     const currentX = event.pageX;
     const currentY = event.pageY;
     // width = Math.max(currentX, x) - Math.min(currentX, x);
@@ -74,7 +74,7 @@ export default function () {
   }
 
   function setSelected(top = 0, left = 0, width = 0, height = 0) {
-    const select = document.getElementById('scan2ai-select')!;
+    const select = document.getElementById('scan2ai-select-area')!;
     select.style.top = top + 'px';
     select.style.left = left + 'px';
     select.style.width = width + 'px';
@@ -88,10 +88,6 @@ export default function () {
       return;
     }
     isSelecting = false;
-    const select = document.getElementById('scan2ai-select')!;
-    select.classList.add('hidden');
-    const result = document.getElementById('scan2ai-result')!;
-    result.classList.remove('hidden');
 
     options.onSelectingEnd?.({
       clientX,
@@ -99,7 +95,7 @@ export default function () {
       pageX,
       pageY,
       width,
-      height,
+      height
     });
     clearSelection();
   }
@@ -108,7 +104,7 @@ export default function () {
     // chèn html, js, event listeners
     options = {
       ...options,
-      ...overrideOptions || {}
+      ...(overrideOptions || {})
     };
     initEventListeners();
   }
@@ -119,6 +115,6 @@ export default function () {
 
   return {
     init,
-    destroy,
+    destroy
   };
 }

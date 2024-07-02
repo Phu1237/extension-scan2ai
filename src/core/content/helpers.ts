@@ -1,7 +1,7 @@
-import type { ChromeMessageRequest } from "@/types/chromemessage";
+import type { ChromeMessageRequest } from '@/types/chromemessage';
 
-export function sendChromeMessage(message: ChromeMessageRequest) {
-  chrome.runtime.sendMessage(message);
+export async function sendChromeMessage(message: ChromeMessageRequest) {
+  return await chrome.runtime.sendMessage(message);
 }
 
 export function crop(img: string, x: number, y: number, width: number, height: number) {
@@ -18,11 +18,10 @@ export function crop(img: string, x: number, y: number, width: number, height: n
 
     sendChromeMessage({
       action: 'crop',
-      value: canvas.toDataURL(),
-    })
+      value: canvas.toDataURL()
+    });
   };
 }
-
 
 export function selected(atrributes: any, x: number, y: number, width: number, height: number) {
   sendChromeMessage({
@@ -32,7 +31,7 @@ export function selected(atrributes: any, x: number, y: number, width: number, h
       x,
       y,
       width,
-      height,
+      height
     }
   });
 }
@@ -41,5 +40,11 @@ export function getBodyHeight() {
   const body = document.body,
     html = document.documentElement;
 
-  return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+  return Math.max(
+    body.scrollHeight,
+    body.offsetHeight,
+    html.clientHeight,
+    html.scrollHeight,
+    html.offsetHeight
+  );
 }

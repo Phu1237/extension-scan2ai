@@ -1,8 +1,8 @@
-import type { ChromeMessageRequest } from "@/types/chromemessage";
+import type { ChromeMessageRequest } from '@/types/chromemessage';
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeText({
-    text: "OFF",
+    text: 'OFF'
   });
 });
 
@@ -33,7 +33,6 @@ async function captureTab(tab) {
     //     }, 500)
     //   })
     // }
-
   });
 }
 
@@ -43,13 +42,13 @@ chrome.action.onClicked.addListener(async (tab) => {
   // Retrieve the action badge to check if the extension is 'ON' or 'OFF'
   const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
   // Next state will always be the opposite
-  const nextState = prevState === 'ON' ? 'OFF' : 'ON'
+  const nextState = prevState === 'ON' ? 'OFF' : 'ON';
 
   // captureTab(tab);
   // Set the action badge to the next state
   await chrome.action.setBadgeText({
     tabId: tab.id,
-    text: nextState,
+    text: nextState
   });
   if (nextState === 'ON') {
     // Fix bug of import raw multiple times
@@ -58,13 +57,10 @@ chrome.action.onClicked.addListener(async (tab) => {
       await chrome.scripting.executeScript(
         {
           target: { tabId: tab.id },
-          files: [
-            'html2canvas.min.js',
-            'content.js'
-          ],
+          files: ['html2canvas.min.js', 'content.js']
         },
-        () => { }
-      )
+        () => {}
+      );
     } else {
       chrome.tabs.sendMessage(tab.id, {
         action: 'reinit'
@@ -78,41 +74,65 @@ chrome.action.onClicked.addListener(async (tab) => {
   // }
 });
 
-chrome.runtime.onMessage.addListener(
-  async function (request: ChromeMessageRequest, sender, sendResponse) {
-    console.log(sender.tab ?
-      "from a content script:" + sender.tab :
-      "from the extension");
-    console.log('request', request);
-    switch (request.action) {
-      case 'selected':
-        if (request.attributes.capturePlace && request.attributes.capturePlace === 'background') {
-          switch (request.attributes.captureType) {
-            case 'visible': {
-              const result = await chrome.tabs.captureVisibleTab();
+chrome.runtime.onMessage.addListener(async function (
+  request: ChromeMessageRequest,
+  sender,
+  sendResponse
+) {
+  console.log(sender.tab ? 'from a content script:' + sender.tab : 'from the extension');
+  console.log('request', request);
+  switch (request.action) {
+    case 'selected':
+      if (request.attributes.capturePlace && request.attributes.capturePlace === 'background') {
+        switch (request.attributes.captureType) {
+          case 'visible': {
+            const result = await chrome.tabs.captureVisibleTab();
 
-              if (!sender.tab || !sender.tab.id) return;
-              chrome.tabs.sendMessage(sender.tab.id, {
-                result: 'selected',
-                value: {
-                  ...request.value,
-                  result: result
-                }
-              })
-              break;
-            }
-            case 'fullpage':
-              // captureTab(sender.tab);
-              break;
-            default:
+            if (!sender.tab || !sender.tab.id) return;
+            chrome.tabs.sendMessage(sender.tab.id, {
+              result: 'selected',
+              value: {
+                ...request.value,
+                result: result
+              }
+            });
+            break;
           }
+          case 'fullpage':
+            // captureTab(sender.tab);
+            break;
+          default:
         }
-        break;
-      case 'crop':
-        chrome.storage.local.set({
-          image: request.value
-        });
-        break;
-    }
+      }
+      break;
+    case 'crop':
+      chrome.storage.local.set({
+        image: request.value
+      });
+      if (!sender.tab || !sender.tab.id) return;
+      chrome.tabs.sendMessage(sender.tab.id, {
+        result: 'crop',
+        value: request.value
+      });
+      break;
+    case 'off':
+      if (!sender.tab || !sender.tab.id) return;
+      await chrome.tabs.sendMessage(sender.tab.id, {
+        action: 'destroy'
+      });
+      await chrome.action.setBadgeText({
+        tabId: sender.tab.id,
+        text: 'OFF'
+      });
+      break;
+    case 'history':
+      chrome.windows.create({ url: 'ui.html#/history', type: 'popup' });
+      break;
+    case 'setting':
+      chrome.windows.create({ url: 'ui.html#/setting', type: 'popup' });
+      break;
+    case 'scan':
+      chrome.windows.create({ url: 'ui.html#/', type: 'popup' });
+      break;
   }
-);
+});

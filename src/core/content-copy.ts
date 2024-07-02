@@ -1,4 +1,4 @@
-import { captureMethodValue, selectingMethod } from '@/constants/common'
+import { captureMethodValue, selectingMethod } from '@/constants/common';
 import { DRAG_AND_DROP } from './selecting';
 
 function extCss() {
@@ -27,7 +27,7 @@ function extCss() {
     //   height: 100%;
     //   background-color: #00000050;
     // }
-    #scan2ai-html #scan2ai-select {
+    #scan2ai-html #scan2ai-select-area {
       position: absolute;
       background: #00000050;
       z-index: 1000;
@@ -43,7 +43,7 @@ function extCss() {
 function extHtml() {
   return `
     <div id="backdrop"></div>
-    <div id="scan2ai-select" class="hidden"></div>
+    <div id="scan2ai-select-area" class="hidden"></div>
     <img id="img" class="hidden">
     <div id="scan2ai-result" class="hidden">
       <div>
@@ -69,8 +69,8 @@ function extHtml() {
 
 // html2canvas(document.body).then(canvas => {
 //   let ctx = canvas.getContext('2d');
-//   document.getElementById('img').src = canvas.toDataURL();
-//   // let img = document.getElementById('img');
+//   document.getElementByid('scan2ai-img').src = canvas.toDataURL();
+//   // let img = document.getElementByid('scan2ai-img');
 //   // let canvasA = document.getElementById('canvas');
 //   // let ctxA = canvasA.getContext('2d');
 //   // ctxA.drawImage(img, 0, 0, 100, 100);
@@ -78,9 +78,9 @@ function extHtml() {
 // });
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log(message);
-  document.getElementById('img')?.setAttribute('src', message.value);
-  // document.getElementById('img').src = message.value;
-})
+  document.getElementByid('scan2ai-img')?.setAttribute('src', message.value);
+  // document.getElementByid('scan2ai-img').src = message.value;
+});
 
 var x = null;
 var y = null;
@@ -93,12 +93,15 @@ function clearSelection() {
   height = null;
   // Remove selection to prevent selection bug
   if (window.getSelection) {
-    if (window.getSelection().empty) {  // Chrome
+    if (window.getSelection().empty) {
+      // Chrome
       window.getSelection().empty();
-    } else if (window.getSelection().removeAllRanges) {  // Firefox
+    } else if (window.getSelection().removeAllRanges) {
+      // Firefox
       window.getSelection().removeAllRanges();
     }
-  } else if (document.selection) {  // IE?
+  } else if (document.selection) {
+    // IE?
     document.selection.empty();
   }
 }
@@ -106,7 +109,7 @@ function crop() {
   console.log('crop');
   let canvas = document.getElementById('canvas');
   let ctx = canvas.getContext('2d');
-  let img = document.getElementById('img');
+  let img = document.getElementByid('scan2ai-img');
   canvas.width = width;
   canvas.height = height;
   // canvas.style.width = width + 'px';
@@ -121,7 +124,6 @@ function crop() {
 }
 
 async function initialize() {
-
   DRAG_AND_DROP.init();
 }
 initialize();

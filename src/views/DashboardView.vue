@@ -1,36 +1,16 @@
 <template>
   <h1>Dashboard</h1>
   <div class="d-flex flex-column ga-3">
-    <img :src="image" />
-    <div class="d-flex flex-wrap ga-3">
-      <template v-for="(action, index) in actions" :key="index">
-        <v-btn
-          color="primary"
-          :loading="clickActionLoading"
-          :disabled="clickActionLoading"
-          @click="onClickAction(action)"
-        >
-          {{ action }}
-        </v-btn>
-      </template>
-    </div>
-    <v-textarea
-      label="Result"
-      variant="outlined"
-      :error="!responseSuccess"
-      :loading="clickActionLoading"
-      v-model="responseResult"
-      readonly
-      auto-grow
-    ></v-textarea>
+    <ScanCard :image="image" :actions="actions" />
     <v-divider />
     <v-text-field
       label="New action"
-      hint="Add new action"
+      hint="Add new action to the action list to use later"
       append-icon="mdi-plus-circle-outline"
       @click:append="onClickAddAction"
       variant="outlined"
       v-model="newAction"
+      persistent-hint
     ></v-text-field>
     <v-table height="300px" fixed-header>
       <thead>
@@ -60,13 +40,12 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue';
-import { CHROME_STORAGE } from '@/constants/common';
-import useAI from '@/composables/useai';
-import useChromeStorage from '@/composables/usechromestorage';
-import { DEFAULT_EXTRA_CONTENTS } from '@/constants/extracontent';
 import type { Storage } from '@/types/storage';
+import { CHROME_STORAGE } from '@/constants/common';
+import { DEFAULT_EXTRA_CONTENTS } from '@/constants/extracontent';
+import useChromeStorage from '@/composables/usechromestorage';
+import ScanCard from '@/components/scan/ScanCard.vue';
 
-const { sendRequest, handleResponse } = useAI();
 const { getChromeStorage, pushChromeStorageExtraContent, removeChromeStorageExtraContent } =
   useChromeStorage();
 
@@ -82,32 +61,6 @@ onBeforeMount(async () => {
   chromeSync.value = sync;
   actions.value.push(...DEFAULT_EXTRA_CONTENTS, ...(sync.extraContent ?? []));
 });
-
-const responseResult = ref<string>('');
-const responseSuccess = ref<boolean>(true);
-const clickActionLoading = ref<boolean>(false);
-const onClickAction = async (action: string) => {
-  clickActionLoading.value = true;
-  responseResult.value = 'Loading...';
-  responseSuccess.value = true;
-  const response = await sendRequest(
-    {
-      local: chromeLocal.value,
-      sync: chromeSync.value
-    },
-    action
-  );
-  const { result, success } = await handleResponse(
-    {
-      local: chromeLocal.value,
-      sync: chromeSync.value
-    },
-    response
-  );
-  responseResult.value = result;
-  responseSuccess.value = success;
-  clickActionLoading.value = false;
-};
 
 const newAction = ref<string>('');
 const onClickAddAction = () => {
