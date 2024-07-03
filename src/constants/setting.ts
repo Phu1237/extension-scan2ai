@@ -80,5 +80,5 @@ export const DEFAULT: DefaultStorage = {
     }
   },
   image: HELLO_WORLD_IMAGE,
-  historyLimitSize: 16
+  historyLimitSize: 8
 };
