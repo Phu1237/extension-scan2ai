@@ -1,6 +1,13 @@
 <template>
   <h1>Instruction</h1>
+  <div class="text-h6 my-4">
+    <div class="font-weight-bold">Notice:</div>
+    This extension just works with websites.<br />
+    Local files like PDF, image or
+    <a href="https://chromewebstore.google.com/">Chrome Web Store</a> will not be works.
+  </div>
   <div class="text-body-1">
+    <div class="text-h6 font-weight-bold">How to use</div>
     <div class="text-subtitle-1 font-weight-bold">Step 1:</div>
     - Choose the Assitant you want to use<br />
     + Gemini: <span v-html="API.GEMINI.hint.api_key"></span><br />
