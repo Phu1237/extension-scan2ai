@@ -6,7 +6,7 @@ export const API = {
       model:
         'Gemini Models Document: <a href="https://ai.google.dev/gemini-api/docs/models/gemini" target="_blank">here</a>',
       api_key:
-        'Get Gemini API key <a href="https://platform.openai.com/api-keys" target="_blank">here</a>'
+        'Follow this instructions to get <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank">Gemini API key</a>.'
     },
     uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{use_latest}}:generateContent?key={{api_key}}'
   },
@@ -17,7 +17,7 @@ export const API = {
       model:
         'OpenAI Document: <a href="https://platform.openai.com/docs/models" target="_blank">here</a>',
       api_key:
-        'Get OpenAI API key <a href="https://aistudio.google.com/app/apikey" target="_blank">here</a>'
+        'Follow this instructions to get <a href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key" target="_blank">OpenAI API key</a>.'
     },
     uri: 'https://api.openai.com/v1/chat/completions'
   }
