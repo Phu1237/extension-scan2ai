@@ -1,7 +1,7 @@
 {
     "name": "Scan2AI",
     "description": "Scan2AI is a extension that allows you to capture a range of webpage resources and use them for AI",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "manifest_version": 3,
     "background": {
         "service_worker": "background.js"
