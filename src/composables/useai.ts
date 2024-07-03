@@ -1,4 +1,5 @@
 import type { Storage } from '@/types/storage';
+import { HELLO_WORLD_IMAGE } from '@/constants/sample';
 import useCommon from './usecommon';
 import useChromeStorage from './usechromestorage';
 import useGemini from './ai/usegemini';
@@ -35,7 +36,6 @@ export default function useAI() {
         !sync.api ||
         !local.apiKey ||
         !local.apiKey[sync.api] ||
-        !local.image ||
         !sync.apiInfo ||
         !sync.apiInfo[sync.api]
       ) {
@@ -44,7 +44,7 @@ export default function useAI() {
       }
       const api = sync.api;
       const apiKey = local.apiKey[api];
-      const image = local.image;
+      const image = local.image ?? HELLO_WORLD_IMAGE;
       const apiModel = sync.apiInfo[api].apiModel;
       const apiModelUseLatest = sync.apiInfo[api].useLatest ?? true;
       if (api === 'gemini') {
@@ -101,13 +101,16 @@ export default function useAI() {
       !sync.api ||
       !local.apiKey ||
       !local.apiKey[sync.api] ||
-      !local.image ||
       !sync.apiInfo ||
       !sync.apiInfo[sync.api]
-    )
-      return '';
+    ) {
+      return {
+        result: 'Missing required API settings',
+        success: false
+      };
+    }
     const api = sync.api;
-    const image = local.image;
+    const image = local.image ?? HELLO_WORLD_IMAGE;
     const apiModel = sync.apiInfo[api].apiModel;
     const apiModelUseLatest = sync.apiInfo[api].useLatest ?? true;
     const { pushChromeStorageHistory } = useChromeStorage();
@@ -116,7 +119,11 @@ export default function useAI() {
     if (api === 'gemini') {
       jsonResult = await response.json();
 
-      result = jsonResult.candidates?.[0]?.content.parts?.[0]?.text ?? jsonResult.error?.message;
+      result =
+        jsonResult.candidates?.[0]?.content?.parts?.[0]?.text ??
+        jsonResult.error?.message ??
+        jsonResult.candidates?.[0]?.finishReason ??
+        'Unexpected error. Check raw result.';
     } else if (api === 'openai') {
       jsonResult = await response.json();
       result =
@@ -124,7 +131,6 @@ export default function useAI() {
         jsonResult.error?.message ??
         'Unexpected error. Check raw result.';
     }
-    result = result ?? 'Unexpected error. Check raw result.';
     const newHistory = {
       api: api,
       apiInfo: {
