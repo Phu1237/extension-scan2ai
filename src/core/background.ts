@@ -15,11 +15,12 @@ const log = (...args: any) => {
   }
 };
 
-// chrome.runtime.onInstalled.addListener(() => {
-//   chrome.action.setBadgeText({
-//     text: 'OFF'
-//   });
-// });
+chrome.runtime.onInstalled.addListener((details) => {
+  const instructionUrl = chrome.runtime.getURL('ui.html#/instruction');
+  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.tabs.create({ url: instructionUrl });
+  }
+});
 
 // async function captureTab(tab) {
 //   return await chrome.tabs.captureVisibleTab((dataUrl) => {
