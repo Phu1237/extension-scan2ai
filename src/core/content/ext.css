@@ -50,17 +50,21 @@
 }
 
 #scan2ai-html #scan2ai-result #scan2ai-result-dialog {
+  min-width: 300px;
   z-index: 2;
 }
 
 #scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-header {
   font-size: large;
+  font-weight: bold;
 }
 
 #scan2ai-html #scan2ai-result #scan2ai-result-dialog #scan2ai-result-dialog-close {
   background: transparent;
   border: none;
   float: right;
+  font-size: 20px;
+  line-height: 20px;
   color: black;
 }
 
