@@ -2,72 +2,95 @@
   <v-card>
     <v-img height="300px" :src="image"></v-img>
 
-    <v-card-title> Run action for this image </v-card-title>
+    <template v-if="!hasApiKeySetting">
+      <v-card-title>You need setting API key first to using this</v-card-title>
+      <v-card-actions>
+        <v-btn color="primary" text="GO TO SETTING" @click="onClickSetting"></v-btn>
+      </v-card-actions>
+    </template>
 
-    <v-card-subtitle>
-      <v-text-field
-        label="Custom action"
-        hint="If you want to run a custom action without add to the action list, you can use this."
-        class="my-2"
-        variant="outlined"
-        :append-icon="clickActionLoading ? 'mdi-send-lock' : 'mdi-send'"
-        @click:append="onClickActionCustom"
-        @keydown.enter.prevent="onClickActionCustom"
-        v-model="customAction"
-        :loading="clickActionLoading"
-        persistent-hint
-      ></v-text-field>
-      <v-textarea
-        label="Result"
-        variant="outlined"
-        :error="!responseSuccess"
-        :loading="clickActionLoading"
-        v-model="responseResult"
-        readonly
-        auto-grow
-      ></v-textarea>
-    </v-card-subtitle>
+    <template v-else>
+      <v-card-title>Run action for this image</v-card-title>
+      <v-card-subtitle>
+        If you want to run a custom action without add to the action list, you can use this.
+        <v-text-field
+          label="Custom action"
+          class="mt-2 mb-4"
+          variant="outlined"
+          :append-icon="clickActionLoading ? 'mdi-send-lock' : 'mdi-send'"
+          @click:append="onClickActionCustom"
+          @keydown.enter.prevent="onClickActionCustom"
+          v-model="customAction"
+          :loading="clickActionLoading"
+        ></v-text-field>
+        <v-textarea
+          :label="resultLabel"
+          variant="outlined"
+          :base-color="responseSuccess ? 'success' : ''"
+          :color="responseSuccess ? 'success' : ''"
+          v-model="responseResult"
+          active
+          auto-grow
+          :error="responseSuccess === false"
+          :focused="responseResult !== ''"
+          @update:focused="() => {}"
+          :loading="clickActionLoading"
+          readonly
+        ></v-textarea>
+        <template v-if="chromeSync.api === 'gemini'">
+          If you use Gemini, sometimes you will see weird results like "RECITATION".<br />
+          It is because the Gemini has already flagged the content so you can't process your image.
+          See the description
+          <a
+            href="https://ai.google.dev/api/rest/v1/GenerateContentResponse#finishreason"
+            target="_blank"
+            >here</a
+          >.
+        </template>
+      </v-card-subtitle>
 
-    <v-card-actions>
-      <v-btn color="orange-lighten-2" text="GO TO SETTING" @click="onClickSetting"></v-btn>
+      <v-card-actions>
+        <v-btn color="primary" text="GO TO SETTING" @click="onClickSetting"></v-btn>
 
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-      <v-btn
-        :icon="showExtraContent ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-        @click="showExtraContent = !showExtraContent"
-      ></v-btn>
-    </v-card-actions>
+        <v-btn
+          :icon="showExtraContent ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+          @click="showExtraContent = !showExtraContent"
+        ></v-btn>
+      </v-card-actions>
 
-    <v-expand-transition>
-      <div v-show="true">
-        <v-divider></v-divider>
+      <v-expand-transition>
+        <div v-show="true">
+          <v-divider></v-divider>
 
-        <v-card-text>
-          <div class="d-flex flex-wrap ga-3">
-            <template v-for="(action, index) in actions" :key="index">
-              <v-btn
-                color="primary"
-                :loading="clickActionLoading"
-                :disabled="clickActionLoading"
-                @click="onClickAction(action)"
-              >
-                {{ action }}
-              </v-btn>
-            </template>
-          </div>
-        </v-card-text>
-      </div>
-    </v-expand-transition>
+          <v-card-text>
+            <h3 class="mb-2">Fast actions</h3>
+            <div class="d-flex flex-wrap ga-3">
+              <template v-for="(action, index) in actions" :key="index">
+                <v-btn
+                  color="primary"
+                  :loading="clickActionLoading"
+                  :disabled="clickActionLoading"
+                  @click="onClickAction(action)"
+                >
+                  {{ action }}
+                </v-btn>
+              </template>
+            </div>
+          </v-card-text>
+        </div>
+      </v-expand-transition>
+    </template>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import router from '@/router';
 import type { PropType } from 'vue';
-import useAI from '@/composables/useai';
 import type { Storage } from '@/types/storage';
+import useAI from '@/composables/useai';
 
 const { sendRequest, handleResponse } = useAI();
 
@@ -92,13 +115,15 @@ const props = defineProps({
 
 const showExtraContent = ref<boolean>(true);
 
+const resultLabel = ref<string>('Result');
 const responseResult = ref<string>('');
-const responseSuccess = ref<boolean>(true);
+const responseSuccess = ref<boolean>();
 const clickActionLoading = ref<boolean>(false);
 const onClickAction = async (action: string) => {
+  resultLabel.value = 'Result: ' + action;
   clickActionLoading.value = true;
   responseResult.value = 'Loading...';
-  responseSuccess.value = true;
+  responseSuccess.value = undefined;
   try {
     const response = await sendRequest(
       {
@@ -107,14 +132,13 @@ const onClickAction = async (action: string) => {
       },
       action
     );
-    // TODO: Fix later
-    const { result, success } = (await handleResponse(
+    const { result, success } = await handleResponse(
       {
         local: props.chromeLocal,
         sync: props.chromeSync
       },
       response
-    )) as any;
+    );
     responseResult.value = result;
     responseSuccess.value = success;
   } catch (err) {
@@ -130,26 +154,26 @@ const onClickActionCustom = async () => {
     alert('Custom action must be not empty.');
     return;
   }
+  resultLabel.value = 'Result: ' + customActionValue;
   customAction.value = '';
   clickActionLoading.value = true;
   responseResult.value = 'Loading...';
-  responseSuccess.value = true;
+  responseSuccess.value = undefined;
   try {
     const response = await sendRequest(
       {
         local: props.chromeLocal,
         sync: props.chromeSync
       },
-      customAction.value
+      customActionValue
     );
-    // TODO: Fix later
-    const { result, success } = (await handleResponse(
+    const { result, success } = await handleResponse(
       {
         local: props.chromeLocal,
         sync: props.chromeSync
       },
       response
-    )) as any;
+    );
     responseResult.value = result;
     responseSuccess.value = success;
   } catch (err) {
@@ -160,7 +184,10 @@ const onClickActionCustom = async () => {
 };
 
 const onClickSetting = () => {
-  // Implement your setting logic here
   router.push({ name: 'setting' });
 };
+
+const hasApiKeySetting = computed(() => {
+  return Boolean(props.chromeSync.api ? props.chromeLocal.apiKey?.[props.chromeSync.api] : false);
+});
 </script>
