@@ -5,7 +5,7 @@ export async function sendChromeMessage(message: ChromeMessageRequest) {
 }
 
 export function crop(img: string, x: number, y: number, width: number, height: number) {
-  let canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+  let canvas: HTMLCanvasElement = document.getElementById('scan2ai-canvas') as HTMLCanvasElement;
   canvas = canvas as HTMLCanvasElement;
   const ctx = canvas.getContext('2d');
   if (!canvas || !ctx) return;
