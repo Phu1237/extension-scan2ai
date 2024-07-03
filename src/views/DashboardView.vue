@@ -8,14 +8,14 @@
       :actions="actions"
     />
     <v-divider />
+    <h2>Add new action to the fast action list to use later</h2>
     <v-text-field
       label="New action"
-      hint="Add new action to the action list to use later"
       append-icon="mdi-plus-circle-outline"
       @click:append="onClickAddAction"
+      @keydown.enter.prevent="onClickAddAction"
       variant="outlined"
       v-model="newAction"
-      persistent-hint
     ></v-text-field>
     <v-table height="300px" fixed-header>
       <thead>

@@ -156,6 +156,9 @@
     <v-btn color="secondary" @click="onClearAPIKey" v-if="api">
       Clear {{ getAIName(api) }} API Key
     </v-btn>
+    <v-btn @click="onClickGotoDashboard">
+      Go to Dashboard
+    </v-btn>
     <template v-if="isDev">
       <v-btn @click="check">Check</v-btn>
       <v-btn @click="clearData">Clear</v-btn>
@@ -166,6 +169,7 @@
 
 <script lang="ts" setup>
 import { onBeforeMount, ref, computed, watch } from 'vue';
+import router from '@/router';
 import type { Storage } from '@/types/storage';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
@@ -273,6 +277,10 @@ const onClearAPIKey = async () => {
   });
 };
 
+const onClickGotoDashboard = () => {
+  router.push({ name: 'dashboard' });
+}
+
 const check = () => {
   log('captureMethod', captureMethod.value);
   log('selectingMethod', selectingMethod.value);
@@ -309,9 +317,10 @@ const setData = async () => {
     },
     historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
   });
+  alert('Update setting successfully!');
 };
 const clearData = async () => {
-  // await clearChromeStorage(CHROME_STORAGE.LOCAL);
+  await clearChromeStorage(CHROME_STORAGE.LOCAL);
   clearChromeStorageHistory();
   await clearChromeStorage(CHROME_STORAGE.SYNC);
 };
