@@ -17,16 +17,17 @@ Discover a smarter way to interact with your screen! Scan2AI is a cutting-edge C
 
 Get it from the extension store:
 
-- [Chrome](#)
+- [Chrome](https://chromewebstore.google.com/detail/scan2ai/hmpmnpmahhjoajmalpbepcmhinlfenpa)
 - [Edge](#)
-- [Opera](#)
+- [Opera](https://chromewebstore.google.com/detail/scan2ai/hmpmnpmahhjoajmalpbepcmhinlfenpa) (Chrome Web Store link)
 
 Or you can download the released version [here](https://github.com/Phu1237/extension-scan2ai/releases/latest).
 
 ## Instructions
 
 - Video:
-  - [Youtube](https://youtu.be/w49YuDG4jO8)
+  - [Extension - Scan2AI](https://youtu.be/w49YuDG4jO8)
+  - [Extension - Scan2AI - How to use](https://youtu.be/A9s2cmzjEFE)
 - Screenshots:
 ![screenshot](screenshots/1.png)
 ![screenshot](screenshots/2.png)
