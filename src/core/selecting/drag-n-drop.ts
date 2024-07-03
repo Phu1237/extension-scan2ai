@@ -83,19 +83,15 @@ export default function () {
 
   function onMouseUp() {
     if (!isSelecting) return;
-    if (!clientX || !clientY || !pageX || !pageY || !width || !height) {
-      isSelecting = false;
-      return;
-    }
     isSelecting = false;
 
     options.onSelectingEnd?.({
-      clientX,
-      clientY,
-      pageX,
-      pageY,
-      width,
-      height
+      clientX: clientX ?? 0,
+      clientY: clientY ?? 0,
+      pageX: pageX ?? 0,
+      pageY: pageY ?? 0,
+      width: width ?? 0,
+      height: height ?? 0
     });
     clearSelection();
   }

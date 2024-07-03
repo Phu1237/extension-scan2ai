@@ -120,6 +120,12 @@ function init() {
       const y = fullpage ? result.pageY : result.clientY;
       const width = result.width;
       const height = result.height;
+      if (!x || !y || !width || !height) {
+        const selectEl = document.getElementById('scan2ai-select')!;
+        selectEl.classList.remove('hidden');
+        document.body.style.removeProperty('overflow');
+        return;
+      }
       selected(
         {
           capturePlace: capturePlace,
