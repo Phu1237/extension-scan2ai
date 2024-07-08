@@ -43,7 +43,7 @@ export default function () {
   }
 
   function onMouseDown(event: MouseEvent): void {
-    if (event.button !== 0) return;
+    if (isSelecting || event.button !== 0) return;
     isSelecting = true;
     clientX = event.clientX;
     clientY = event.clientY;
