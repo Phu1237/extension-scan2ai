@@ -3,9 +3,15 @@
     <v-img height="300px" :src="image"></v-img>
 
     <template v-if="!hasApiKeySetting">
-      <v-card-title>You need setting API key first to using this</v-card-title>
+      <v-card-title>
+        You need setting API key first to using this function.<br />
+        If you don't know what you are doing, click INSTRUCTION<br />
+        Click GO TO SETTING to setup API key
+      </v-card-title>
       <v-card-actions>
-        <v-btn color="primary" text="GO TO SETTING" @click="onClickSetting"></v-btn>
+        <v-btn color="primary" text="INSTRUCTION" @click="onClickInstruction"></v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="secondary" text="GO TO SETTING" @click="onClickSetting"></v-btn>
       </v-card-actions>
     </template>
 
@@ -183,6 +189,9 @@ const onClickActionCustom = async () => {
   clickActionLoading.value = false;
 };
 
+const onClickInstruction = () => {
+  router.push({ name: 'instruction' });
+};
 const onClickSetting = () => {
   router.push({ name: 'setting' });
 };
