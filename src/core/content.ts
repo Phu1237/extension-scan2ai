@@ -1,6 +1,6 @@
 import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
-import { crop, selected, getBodyHeight } from './content/helpers';
+import { crop, selected, getBodyHeight, hideOverflow } from './content/helpers';
 import captureChromeAPIVisibleContent from './capture/chrome-api-visible-content';
 import useSelecting from './selecting';
 
@@ -79,7 +79,7 @@ function initExtension() {
     resultEl.classList.add('hidden');
     const selectEl = document.getElementById('scan2ai-select')!;
     selectEl.classList.remove('hidden');
-    document.body.style.removeProperty('overflow');
+    hideOverflow(false);
     const selectAreaEl = document.getElementById('scan2ai-select-area')!;
     selectAreaEl.classList.add('hidden');
   });
@@ -104,7 +104,7 @@ function init() {
       if (fullpage) {
         //
       } else {
-        document.body.style.overflow = 'hidden';
+        hideOverflow(true);
       }
     },
     onSelectingEnd: (result) => {
@@ -123,19 +123,22 @@ function init() {
       if (!x || !y || !width || !height) {
         const selectEl = document.getElementById('scan2ai-select')!;
         selectEl.classList.remove('hidden');
-        document.body.style.removeProperty('overflow');
+        hideOverflow(false);
         return;
       }
-      selected(
-        {
-          capturePlace: capturePlace,
-          captureType: captureType
-        },
-        x,
-        y,
-        width,
-        height
-      );
+      // Wait for 100ms for the selecting area to be hidden
+      setTimeout(() => {
+        selected(
+          {
+            capturePlace: capturePlace,
+            captureType: captureType
+          },
+          x,
+          y,
+          width,
+          height
+        );
+      }, 50);
     }
   });
 }

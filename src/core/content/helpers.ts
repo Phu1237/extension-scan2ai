@@ -48,3 +48,13 @@ export function getBodyHeight() {
     html.offsetHeight
   );
 }
+
+export function hideOverflow(hidden: boolean) {
+  if (hidden) {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+  document.documentElement.style.removeProperty('overflow');
+  document.body.style.removeProperty('overflow');
+}
