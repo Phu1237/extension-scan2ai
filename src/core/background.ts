@@ -1,7 +1,8 @@
 import type { ChromeMessageRequest } from '@/types/chromemessage';
 
+const isDev = import.meta.env.MODE === 'development';
 const log = (...args: any) => {
-  if (import.meta.env.MODE === 'development') {
+  if (isDev) {
     if (args.length > 2) {
       console.group(args[0]);
       for (let i = 1; i < args.length; i++) {
@@ -106,6 +107,9 @@ chrome.runtime.onMessage.addListener(async function (
         switch (request.attributes.captureType) {
           case 'visible': {
             const result = await chrome.tabs.captureVisibleTab();
+            if (isDev) {
+              chrome.windows.create({ url: result, type: 'popup' });
+            }
 
             if (!sender.tab || !sender.tab.id) return;
             chrome.tabs.sendMessage(sender.tab.id, {
