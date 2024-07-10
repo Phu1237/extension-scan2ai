@@ -1,6 +1,12 @@
 import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
-import { crop, selected, getBodyHeight, hideOverflow } from './content/helpers';
+import {
+  crop,
+  selected,
+  getBodyHeight,
+  hideOverflow,
+  getClipboardContents
+} from './content/helpers';
 import captureChromeAPIVisibleContent from './capture/chrome-api-visible-content';
 import useSelecting from './selecting';
 
@@ -38,7 +44,9 @@ function onChromeMessage(
       const height = request.value.height;
       crop(img, x, y, width, height);
     } else if (request.result === 'crop') {
-      const resultEl = document.getElementById('scan2ai-result')!;
+      const shadowEl = document.getElementById('scan2ai')!;
+      const shadow = shadowEl.shadowRoot!;
+      const resultEl = shadow.getElementById('scan2ai-result')!;
       resultEl.classList.remove('hidden');
     }
     return;
@@ -57,46 +65,50 @@ chrome.runtime.onMessage.addListener(onChromeMessage);
 function initExtension() {
   const extension = document.createElement('div');
   extension.id = 'scan2ai';
-  const style = document.createElement('style');
-  style.textContent = extCss;
-  style.id = 'scan2ai-style';
-  extension.appendChild(style);
+  extension.setAttribute(
+    'style',
+    `
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: ${getBodyHeight()}px;
+    z-index: 9999;
+  `
+  );
+
+  const shadow = extension.attachShadow({ mode: 'open' });
   const html = document.createElement('div');
   html.id = 'scan2ai-html';
   html.innerHTML = extHtml;
-  html.style.position = 'absolute';
-  html.style.top = '0';
-  html.style.left = '0';
   html.style.width = '100%';
-  html.style.height = getBodyHeight() + 'px';
-  html.style.zIndex = '9999';
+  html.style.height = '100%';
+  shadow.appendChild(html);
+  const style = document.createElement('style');
+  style.textContent = extCss;
+  style.id = 'scan2ai-style';
+  shadow.appendChild(style);
 
-  extension.appendChild(html);
+  // extension.appendChild(html);
   document.body.appendChild(extension);
   // init button events
-  document.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
-    const resultEl = document.getElementById('scan2ai-result')!;
+  shadow.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
+    const resultEl = shadow.getElementById('scan2ai-result')!;
     resultEl.classList.add('hidden');
-    const selectEl = document.getElementById('scan2ai-select')!;
+    const selectEl = shadow.getElementById('scan2ai-select')!;
     selectEl.classList.remove('hidden');
     hideOverflow(false);
-    const selectAreaEl = document.getElementById('scan2ai-select-area')!;
+    const selectAreaEl = shadow.getElementById('scan2ai-select-area')!;
     selectAreaEl.classList.add('hidden');
   });
-  document.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
+  shadow.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
     el.addEventListener('click', () => {
       chrome.runtime.sendMessage({
         action: el.getAttribute('data-action')
       });
     });
   });
-}
-
-const fullpage = isFullPage;
-
-function init() {
-  initExtension();
-  initSelecting({
+  initSelecting(shadow, {
     window: window,
     document: document,
     onSelectingStart: () => {
@@ -114,14 +126,14 @@ function init() {
       // } else {
       //   document.body.style.removeProperty('overflow');
       // }
-      const selectEl = document.getElementById('scan2ai-select')!;
+      const selectEl = shadow.getElementById('scan2ai-select')!;
       selectEl.classList.add('hidden');
       const x = fullpage ? result.pageX : result.clientX;
       const y = fullpage ? result.pageY : result.clientY;
       const width = result.width;
       const height = result.height;
       if (!x || !y || !width || !height) {
-        const selectEl = document.getElementById('scan2ai-select')!;
+        const selectEl = shadow.getElementById('scan2ai-select')!;
         selectEl.classList.remove('hidden');
         hideOverflow(false);
         return;
@@ -141,5 +153,22 @@ function init() {
       }, 50);
     }
   });
+}
+
+const fullpage = isFullPage;
+
+async function showClipboardImage() {
+  const clipboard = getClipboardContents((render) => {
+    if (!render) return;
+    console.log(render);
+
+    const cbImage = document.getElementById('scan2ai-clipboard-img')! as HTMLImageElement;
+    cbImage.src = String(render);
+  });
+}
+
+function init() {
+  showClipboardImage();
+  initExtension();
 }
 init();

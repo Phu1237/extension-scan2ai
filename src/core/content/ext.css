@@ -30,6 +30,15 @@
   z-index: 1000;
 }
 
+#scan2ai-html #scan2ai-clipboard {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    max-width: 300px;
+    padding: 1px;
+    background: white;
+}
+
 #scan2ai-html #scan2ai-result {
   position: fixed;
   display: flex;
@@ -66,6 +75,7 @@
   font-size: 20px;
   line-height: 20px;
   color: black;
+  cursor: pointer;
 }
 
 #scan2ai-html #scan2ai-result #scan2ai-result-dialog .scan2ai-result-header,

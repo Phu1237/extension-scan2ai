@@ -5,7 +5,9 @@ export async function sendChromeMessage(message: ChromeMessageRequest) {
 }
 
 export function crop(img: string, x: number, y: number, width: number, height: number) {
-  let canvas: HTMLCanvasElement = document.getElementById('scan2ai-canvas') as HTMLCanvasElement;
+  const shadowEl = document.getElementById('scan2ai')!;
+  const shadow = shadowEl.shadowRoot!;
+  let canvas: HTMLCanvasElement = shadow.getElementById('scan2ai-canvas') as HTMLCanvasElement;
   canvas = canvas as HTMLCanvasElement;
   const ctx = canvas.getContext('2d');
   if (!canvas || !ctx) return;
@@ -57,4 +59,28 @@ export function hideOverflow(hidden: boolean) {
   }
   document.documentElement.style.removeProperty('overflow');
   document.body.style.removeProperty('overflow');
+}
+
+export async function getClipboardContents(
+  callback: (render: string | ArrayBuffer | null) => void
+) {
+  try {
+    const clipboardItems = await navigator.clipboard.read();
+
+    for (const clipboardItem of clipboardItems) {
+      for (const type of clipboardItem.types) {
+        const blob = await clipboardItem.getType(type);
+        // we can now use blob here
+        if (type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onload = () => {
+            callback(reader.result);
+          };
+        }
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
