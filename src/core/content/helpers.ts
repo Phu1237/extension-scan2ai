@@ -4,7 +4,13 @@ export async function sendChromeMessage(message: ChromeMessageRequest) {
   return await chrome.runtime.sendMessage(message);
 }
 
-export function crop(img: string, x: number, y: number, width: number, height: number) {
+export function crop(
+  img: string,
+  x: number = 0,
+  y: number = 0,
+  width: number = 0,
+  height: number = 0
+) {
   const shadowEl = document.getElementById('scan2ai')!;
   const shadow = shadowEl.shadowRoot!;
   let canvas: HTMLCanvasElement = shadow.getElementById('scan2ai-canvas') as HTMLCanvasElement;
@@ -14,9 +20,15 @@ export function crop(img: string, x: number, y: number, width: number, height: n
   const image = new Image();
   image.src = img;
   image.onload = () => {
-    canvas.setAttribute('width', String(width));
-    canvas.setAttribute('height', String(height));
-    ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+    let imgWidth = width;
+    let imgHeight = height;
+    if (imgWidth === 0 || imgHeight === 0) {
+      imgWidth = image.naturalWidth;
+      imgHeight = image.naturalHeight;
+    }
+    canvas.setAttribute('width', String(imgWidth));
+    canvas.setAttribute('height', String(imgHeight));
+    ctx.drawImage(image, x, y, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight);
 
     sendChromeMessage({
       action: 'crop',
@@ -77,10 +89,12 @@ export async function getClipboardContents(
           reader.onload = () => {
             callback(reader.result);
           };
+          return;
         }
       }
     }
   } catch (err) {
     console.error(err);
   }
+  callback(null);
 }
