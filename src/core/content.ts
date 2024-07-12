@@ -102,8 +102,8 @@ function initExtension() {
   style.id = 'scan2ai-style';
   shadow.appendChild(style);
 
-  // extension.appendChild(html);
   document.body.appendChild(extension);
+
   // init button events
   shadow.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
     const resultEl = shadow.getElementById('scan2ai-result')!;
@@ -137,8 +137,6 @@ function initExtension() {
           });
           break;
         case CHROME_MESSAGE_BACKGROUND_ACTION.CLIPBOARD_SCAN:
-          console.log('CHROME_MESSAGE_BACKGROUND_ACTION.CLIPBOARD_SCAN');
-
           getClipboardContents((render) => {
             log('getClipboardContents', render);
             if (!render) {
@@ -147,14 +145,6 @@ function initExtension() {
               );
               return;
             }
-            // const shadowEl = document.getElementById('scan2ai')!;
-            // const shadow = shadowEl.shadowRoot!;
-
-            // const cbImage = shadow.getElementById('scan2ai-clipboard-img')!;
-            // const cbImageEl = cbImage as HTMLImageElement;
-            // console.log('cbImageEl', cbImageEl);
-            // cbImageEl.src = String(render);
-            // cbImageEl.classList.remove('hidden');
             const base64Img = render as string;
             crop(base64Img);
           });
@@ -177,7 +167,7 @@ function initExtension() {
           });
           break;
         default:
-          console.log('Action not register', action);
+          log('Action not register', action);
       }
     });
   });
