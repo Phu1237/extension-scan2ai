@@ -8,6 +8,12 @@
         :to="{ name: 'instruction' }"
       ></v-list-item>
       <v-list-item
+        prepend-icon="mdi-lightbulb-on-10"
+        title="Tips"
+        value="tips"
+        :to="{ name: 'tips' }"
+      ></v-list-item>
+      <v-list-item
         prepend-icon="mdi-home"
         title="Dashboard"
         value="dashboard"
