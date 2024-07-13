@@ -1,7 +1,8 @@
 import type { ChromeMessageRequest } from '@/types/chromemessage';
 import {
   CHROME_MESSAGE_BACKGROUND_ACTION,
-  CHROME_MESSAGE_CONTENT_ACTION
+  CHROME_MESSAGE_CONTENT_ACTION,
+  BADGE_STATE
 } from './background/constants';
 
 const isDev = import.meta.env.MODE === 'development';
@@ -63,18 +64,17 @@ chrome.action.onClicked.addListener(async (tab) => {
   // Retrieve the action badge to check if the extension is 'ON' or 'OFF'
   const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
   // Next state will always be the opposite
-  const nextState = prevState === 'ON' ? 'OFF' : 'ON';
+  const nextState = prevState === BADGE_STATE.ON ? BADGE_STATE.OFF : BADGE_STATE.ON;
 
-  // captureTab(tab);
   // Set the action badge to the next state
   await chrome.action.setBadgeText({
     tabId: tab.id,
     text: nextState
   });
-  if (nextState === 'ON') {
+  if (nextState === BADGE_STATE.ON) {
     // Fix bug of import raw multiple times
     // const variable is declared
-    if (prevState === '') {
+    if (prevState === BADGE_STATE.EMPTY) {
       await chrome.scripting.executeScript(
         {
           target: { tabId: tab.id },

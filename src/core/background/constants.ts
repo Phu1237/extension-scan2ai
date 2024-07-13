@@ -12,3 +12,9 @@ export const CHROME_MESSAGE_CONTENT_ACTION = {
   DESTROY: 'destroy',
   SHOW_RESULT: 'show-result'
 };
+
+export const BADGE_STATE = {
+  OFF: 'OFF',
+  ON: 'ON',
+  EMPTY: ''
+};
