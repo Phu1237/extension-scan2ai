@@ -1,5 +1,5 @@
 <template>
-  <h1>History</h1>
+  <h1 class="mb-4">History</h1>
   <v-btn color="primary" class="mb-4" @click="clear" :loading="clearLoading">Clear history</v-btn>
   <v-btn color="info" class="mb-4 ml-2" disabled>{{ usageInfo }}</v-btn>
   <v-row dense>

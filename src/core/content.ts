@@ -1,6 +1,16 @@
 import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
-import { crop, selected, getBodyHeight, hideOverflow } from './content/helpers';
+import {
+  CHROME_MESSAGE_BACKGROUND_ACTION,
+  CHROME_MESSAGE_CONTENT_ACTION
+} from './content/constants';
+import {
+  crop,
+  selected,
+  getBodyHeight,
+  hideOverflow,
+  getClipboardContents
+} from './content/helpers';
 import captureChromeAPIVisibleContent from './capture/chrome-api-visible-content';
 import useSelecting from './selecting';
 
@@ -37,70 +47,137 @@ function onChromeMessage(
       const width = request.value.width;
       const height = request.value.height;
       crop(img, x, y, width, height);
-    } else if (request.result === 'crop') {
-      const resultEl = document.getElementById('scan2ai-result')!;
-      resultEl.classList.remove('hidden');
     }
     return;
   }
-  if (request.action === 'reinit') {
-    init();
-  } else if (request.action === 'destroy') {
-    document.getElementById('scan2ai')?.remove();
-    destroySelecting();
-    // chrome.runtime.onMessage.removeListener(onChromeMessage);
+  switch (request.action) {
+    case CHROME_MESSAGE_CONTENT_ACTION.REINIT:
+      init();
+      break;
+    case CHROME_MESSAGE_CONTENT_ACTION.DESTROY:
+      document.getElementById('scan2ai')?.remove();
+      destroySelecting();
+      // chrome.runtime.onMessage.removeListener(onChromeMessage);
+      break;
+    case CHROME_MESSAGE_CONTENT_ACTION.SHOW_RESULT: {
+      const shadowEl = document.getElementById('scan2ai')!;
+      const shadow = shadowEl.shadowRoot!;
+      const selectEl = shadow.getElementById('scan2ai-select')!;
+      selectEl.classList.add('hidden');
+      const resultEl = shadow.getElementById('scan2ai-result')!;
+      resultEl.classList.remove('hidden');
+      break;
+    }
   }
 }
 
 chrome.runtime.onMessage.addListener(onChromeMessage);
 
+const fullpage = isFullPage;
+
 function initExtension() {
   const extension = document.createElement('div');
   extension.id = 'scan2ai';
+  extension.setAttribute(
+    'style',
+    `
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: ${getBodyHeight()}px;
+    z-index: 9999;
+  `
+  );
+
+  const shadow = extension.attachShadow({ mode: 'open' });
+  const html = document.createElement('div');
+  html.id = 'scan2ai-html';
+  html.innerHTML = extHtml.replace('{{logo_url}}', chrome.runtime.getURL('/icons/icon.png'));
+  html.style.width = '100%';
+  html.style.height = '100%';
+  shadow.appendChild(html);
   const style = document.createElement('style');
   style.textContent = extCss;
   style.id = 'scan2ai-style';
-  extension.appendChild(style);
-  const html = document.createElement('div');
-  html.id = 'scan2ai-html';
-  html.innerHTML = extHtml;
-  html.style.position = 'absolute';
-  html.style.top = '0';
-  html.style.left = '0';
-  html.style.width = '100%';
-  html.style.height = getBodyHeight() + 'px';
-  html.style.zIndex = '9999';
+  shadow.appendChild(style);
 
-  extension.appendChild(html);
   document.body.appendChild(extension);
+
   // init button events
-  document.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
-    const resultEl = document.getElementById('scan2ai-result')!;
+  shadow.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
+    const resultEl = shadow.getElementById('scan2ai-result')!;
     resultEl.classList.add('hidden');
-    const selectEl = document.getElementById('scan2ai-select')!;
+    const selectEl = shadow.getElementById('scan2ai-select')!;
     selectEl.classList.remove('hidden');
     hideOverflow(false);
-    const selectAreaEl = document.getElementById('scan2ai-select-area')!;
+    const selectAreaEl = shadow.getElementById('scan2ai-select-area')!;
     selectAreaEl.classList.add('hidden');
   });
-  document.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
+  /**
+   * Toolbar buttons
+   */
+  shadow.getElementById('scan2ai-toolbar-btn')?.addEventListener('click', (el) => {
+    const btnEl = el.currentTarget as HTMLElement;
+    btnEl.classList.toggle('active');
+    const actionsEl = shadow.getElementById('scan2ai-toolbar-actions')!;
+    actionsEl.classList.toggle('hidden');
+  });
+  shadow.querySelectorAll('[data-name="scan2ai-toolbar-action"]').forEach((el) => {
     el.addEventListener('click', () => {
-      chrome.runtime.sendMessage({
-        action: el.getAttribute('data-action')
-      });
+      const action = el.getAttribute('data-action');
+      log('scan2ai-toolbar-action', action);
+      switch (action) {
+        case CHROME_MESSAGE_BACKGROUND_ACTION.TURN_OFF:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.HISTORY:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.INSTRUCTION:
+          chrome.runtime.sendMessage({
+            action: el.getAttribute('data-action')
+          });
+          break;
+        case CHROME_MESSAGE_BACKGROUND_ACTION.CLIPBOARD_SCAN:
+          getClipboardContents((render) => {
+            log('getClipboardContents', render);
+            if (!render) {
+              alert(
+                'No valid image found in the clipboard data!\nExample:\n- For Windows: Windows + Shift + S'
+              );
+              return;
+            }
+            const base64Img = render as string;
+            crop(base64Img);
+          });
+          break;
+        default:
+          log('Action not registered!', action);
+      }
     });
   });
-}
-
-const fullpage = isFullPage;
-
-function init() {
-  initExtension();
-  initSelecting({
+  shadow.querySelectorAll('[data-name="scan2ai-result-action"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const action = el.getAttribute('data-action');
+      switch (action) {
+        case CHROME_MESSAGE_BACKGROUND_ACTION.TURN_OFF:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.HISTORY:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.SCAN:
+          chrome.runtime.sendMessage({
+            action: el.getAttribute('data-action')
+          });
+          break;
+        default:
+          log('Action not register', action);
+      }
+    });
+  });
+  initSelecting(shadow, {
     window: window,
     document: document,
     onSelectingStart: () => {
       log('onSelectingStart');
+      const toolbarEl = shadow.querySelector('.scan2ai-toolbar')!;
+      toolbarEl.classList.add('hidden');
       if (fullpage) {
         //
       } else {
@@ -114,14 +191,16 @@ function init() {
       // } else {
       //   document.body.style.removeProperty('overflow');
       // }
-      const selectEl = document.getElementById('scan2ai-select')!;
+      const selectEl = shadow.getElementById('scan2ai-select')!;
       selectEl.classList.add('hidden');
+      const toolbarEl = shadow.querySelector('.scan2ai-toolbar')!;
+      toolbarEl.classList.remove('hidden');
       const x = fullpage ? result.pageX : result.clientX;
       const y = fullpage ? result.pageY : result.clientY;
       const width = result.width;
       const height = result.height;
       if (!x || !y || !width || !height) {
-        const selectEl = document.getElementById('scan2ai-select')!;
+        const selectEl = shadow.getElementById('scan2ai-select')!;
         selectEl.classList.remove('hidden');
         hideOverflow(false);
         return;
@@ -138,8 +217,12 @@ function init() {
           width,
           height
         );
-      }, 50);
+      }, 100);
     }
   });
+}
+
+function init() {
+  initExtension();
 }
 init();

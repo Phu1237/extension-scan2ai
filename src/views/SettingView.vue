@@ -1,5 +1,5 @@
 <template>
-  <h1>Setting</h1>
+  <h1 class="mb-4">Setting</h1>
   <div class="mb-3">
     <h2 class="mb-2">Extension settings</h2>
     <v-select
@@ -156,9 +156,7 @@
     <v-btn color="secondary" @click="onClearAPIKey" v-if="api">
       Clear {{ getAIName(api) }} API Key
     </v-btn>
-    <v-btn @click="onClickGotoDashboard">
-      Go to Dashboard
-    </v-btn>
+    <v-btn @click="onClickGotoDashboard"> Go to Dashboard </v-btn>
     <template v-if="isDev">
       <v-btn @click="check">Check</v-btn>
       <v-btn @click="clearData">Clear</v-btn>
@@ -275,11 +273,12 @@ const onClearAPIKey = async () => {
       [api.value]: ''
     }
   });
+  alert('Clear API key successfully!');
 };
 
 const onClickGotoDashboard = () => {
   router.push({ name: 'dashboard' });
-}
+};
 
 const check = () => {
   log('captureMethod', captureMethod.value);

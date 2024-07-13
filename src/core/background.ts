@@ -1,4 +1,9 @@
 import type { ChromeMessageRequest } from '@/types/chromemessage';
+import {
+  CHROME_MESSAGE_BACKGROUND_ACTION,
+  CHROME_MESSAGE_CONTENT_ACTION,
+  BADGE_STATE
+} from './background/constants';
 
 const isDev = import.meta.env.MODE === 'development';
 const log = (...args: any) => {
@@ -59,18 +64,17 @@ chrome.action.onClicked.addListener(async (tab) => {
   // Retrieve the action badge to check if the extension is 'ON' or 'OFF'
   const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
   // Next state will always be the opposite
-  const nextState = prevState === 'ON' ? 'OFF' : 'ON';
+  const nextState = prevState === BADGE_STATE.ON ? BADGE_STATE.OFF : BADGE_STATE.ON;
 
-  // captureTab(tab);
   // Set the action badge to the next state
   await chrome.action.setBadgeText({
     tabId: tab.id,
     text: nextState
   });
-  if (nextState === 'ON') {
+  if (nextState === BADGE_STATE.ON) {
     // Fix bug of import raw multiple times
     // const variable is declared
-    if (prevState === '') {
+    if (prevState === BADGE_STATE.EMPTY) {
       await chrome.scripting.executeScript(
         {
           target: { tabId: tab.id },
@@ -83,12 +87,12 @@ chrome.action.onClicked.addListener(async (tab) => {
       );
     } else {
       chrome.tabs.sendMessage(tab.id, {
-        action: 'reinit'
+        action: CHROME_MESSAGE_CONTENT_ACTION.REINIT
       });
     }
   } else {
     chrome.tabs.sendMessage(tab.id, {
-      action: 'destroy'
+      action: CHROME_MESSAGE_CONTENT_ACTION.DESTROY
     });
   }
   // }
@@ -134,27 +138,30 @@ chrome.runtime.onMessage.addListener(async function (
       });
       if (!sender.tab || !sender.tab.id) return;
       chrome.tabs.sendMessage(sender.tab.id, {
-        result: 'crop',
+        action: CHROME_MESSAGE_CONTENT_ACTION.SHOW_RESULT,
         value: request.value
       });
       break;
-    case 'off':
+    case CHROME_MESSAGE_BACKGROUND_ACTION.TURN_OFF:
       if (!sender.tab || !sender.tab.id) return;
       await chrome.tabs.sendMessage(sender.tab.id, {
-        action: 'destroy'
+        action: CHROME_MESSAGE_CONTENT_ACTION.DESTROY
       });
       await chrome.action.setBadgeText({
         tabId: sender.tab.id,
         text: 'OFF'
       });
       break;
-    case 'history':
+    case CHROME_MESSAGE_BACKGROUND_ACTION.INSTRUCTION:
+      chrome.tabs.create({ url: 'ui.html#/instruction' });
+      break;
+    case CHROME_MESSAGE_BACKGROUND_ACTION.HISTORY:
       chrome.windows.create({ url: 'ui.html#/history', type: 'popup' });
       break;
-    case 'setting':
+    case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
       chrome.windows.create({ url: 'ui.html#/setting', type: 'popup' });
       break;
-    case 'scan':
+    case CHROME_MESSAGE_BACKGROUND_ACTION.SCAN:
       chrome.windows.create({ url: 'ui.html#/', type: 'popup' });
       break;
   }

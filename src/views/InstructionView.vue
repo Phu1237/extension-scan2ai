@@ -1,11 +1,13 @@
 <template>
-  <h1>Instruction</h1>
-  <div class="text-h6 my-4">
+  <h1 class="mb-4">Instruction</h1>
+  <div class="text-h6">
     <div class="font-weight-bold">Notice:</div>
-    This extension just works with websites.<br />
-    Local files like PDF, image or
-    <a href="https://chromewebstore.google.com/">Chrome Web Store</a> will not be works.
+    This extension just work best with websites.<br />
+    <a href="https://chromewebstore.google.com/">Chrome Web Store</a> will not be works.<br />
+    For file open from your local file (like PDF, image, etc), please see
+    <RouterLink :to="{ name: 'tips' }">Tips</RouterLink>
   </div>
+  <v-divider class="my-4"></v-divider>
   <div class="text-body-1">
     <div class="text-h6 font-weight-bold">How to use</div>
     <div class="text-subtitle-1 font-weight-bold">Step 1:</div>
@@ -14,9 +16,10 @@
     + OpenAI: <span v-html="API.OPENAI.hint.api_key"></span><br />
     <div class="text-subtitle-1 font-weight-bold">Step 2:</div>
     - Go to <RouterLink :to="{ name: 'setting' }">Setting</RouterLink> (1)<br />
-    - Fill in the API key field (2)<br />
+    - Choose your Assistant model (2)<br />
+    - Fill in the API key field (3)<br />
     + Other fields can be default<br />
-    - Click Update button (3)<br />
+    - Click Update button (4)<br />
     <v-img :src="SettingAPIKeyImage" /><br />
     <div class="text-subtitle-1 font-weight-bold">Step 3: Start using extension's features</div>
     - Go to the website you want use this extension for<br />
