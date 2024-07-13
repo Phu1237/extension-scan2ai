@@ -53,8 +53,6 @@ export default function selectingDragAndDrop() {
     pageY = event.pageY;
     const select = selector.getElementById('scan2ai-select-area')!;
     select.classList.remove('hidden');
-    const result = selector.getElementById('scan2ai-result')!;
-    result.classList.add('hidden');
     setSelected(pageY, pageX);
     options.onSelectingStart?.();
   }

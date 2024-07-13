@@ -176,6 +176,8 @@ function initExtension() {
     document: document,
     onSelectingStart: () => {
       log('onSelectingStart');
+      const toolbarEl = shadow.querySelector('.scan2ai-toolbar')!;
+      toolbarEl.classList.add('hidden');
       if (fullpage) {
         //
       } else {
@@ -191,6 +193,8 @@ function initExtension() {
       // }
       const selectEl = shadow.getElementById('scan2ai-select')!;
       selectEl.classList.add('hidden');
+      const toolbarEl = shadow.querySelector('.scan2ai-toolbar')!;
+      toolbarEl.classList.remove('hidden');
       const x = fullpage ? result.pageX : result.clientX;
       const y = fullpage ? result.pageY : result.clientY;
       const width = result.width;
