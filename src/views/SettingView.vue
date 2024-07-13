@@ -273,6 +273,7 @@ const onClearAPIKey = async () => {
       [api.value]: ''
     }
   });
+  alert('Clear API key successfully!');
 };
 
 const onClickGotoDashboard = () => {

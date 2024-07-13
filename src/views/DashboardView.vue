@@ -10,7 +10,7 @@
     <v-divider />
     <h2>Add new action to the fast action list to use later</h2>
     <v-text-field
-      label="New action"
+      label="New action. Ex: Translate to <YOUR_LANGUAGE>"
       append-icon="mdi-plus-circle-outline"
       @click:append="onClickAddAction"
       @keydown.enter.prevent="onClickAddAction"
