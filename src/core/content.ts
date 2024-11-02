@@ -57,7 +57,7 @@ function onChromeMessage(
     case CHROME_MESSAGE_CONTENT_ACTION.DESTROY:
       document.getElementById('scan2ai')?.remove();
       destroySelecting();
-      // chrome.runtime.onMessage.removeListener(onChromeMessage);
+      hideOverflow(false);
       break;
     case CHROME_MESSAGE_CONTENT_ACTION.SHOW_RESULT: {
       const shadowEl = document.getElementById('scan2ai')!;
