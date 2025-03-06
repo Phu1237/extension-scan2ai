@@ -1,4 +1,4 @@
-import { API, GEMINI, OPENAI, MORE } from '@/constants/ai';
+import { API, GEMINI, OPENAI, XAI, MORE } from '@/constants/ai';
 import { HELLO_WORLD_IMAGE } from '@/constants/sample';
 import { CAPTURE_METHOD_VALUE, SELECTING_METHOD_VALUE } from './common';
 import type { DefaultStorage } from '@/types/storage';
@@ -43,11 +43,12 @@ export const SELECTING_METHOD_LIST = [
 
 export const HISTORY_LIMIT_SIZE_LIST = [4, 8, 12, 16, 20, 24];
 
-export const API_LIST = [API.GEMINI, API.OPENAI];
+export const API_LIST = [API.GEMINI, API.OPENAI, API.XAI];
 
 export const API_MODEL_LIST = {
   [API.GEMINI.value]: [GEMINI.GEMINI_1_5_FLASH, GEMINI.GEMINI_1_5_PRO, MORE.CUSTOM],
-  [API.OPENAI.value]: [OPENAI.GPT_4O, OPENAI.GPT_4, OPENAI.GPT_4_TURBO, MORE.CUSTOM]
+  [API.OPENAI.value]: [OPENAI.GPT_4O, OPENAI.GPT_4, OPENAI.GPT_4_TURBO, MORE.CUSTOM],
+  [API.XAI.value]: [XAI.GROK_2_VISION_1212, XAI.GROK_VISION_BETA, MORE.CUSTOM]
 };
 
 export const TOOLTIP = {
@@ -72,6 +73,9 @@ export const DEFAULT: DefaultStorage = {
     },
     [API.OPENAI.value]: {
       apiModel: OPENAI.GPT_4O.value
+    },
+    [API.XAI.value]: {
+      apiModel: XAI.GROK_2_VISION_1212.value
     }
   },
   image: HELLO_WORLD_IMAGE,

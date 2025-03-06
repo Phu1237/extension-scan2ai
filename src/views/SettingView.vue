@@ -169,6 +169,7 @@
 import { onBeforeMount, ref, computed, watch } from 'vue';
 import router from '@/router';
 import type { Storage } from '@/types/storage';
+import { API } from '@/constants/ai';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
   TOOLTIP,
@@ -356,9 +357,14 @@ const test = async () => {
       jsonResult.candidates?.[0]?.content.parts?.[0]?.text ??
       jsonResult.error?.message ??
       'Unexpected error. Check raw result.';
-  } else if (api.value === 'openai') {
+  } else if (api.value === 'openai' || api.value === 'xai') {
+    let endpoint = API.OPENAI.uri;
+    switch (api.value) {
+      case 'xai':
+        endpoint = API.XAI.uri;
+    }
     const { useOpenAI } = useAI();
-    const { buildRequestMessage, sendRequest } = useOpenAI();
+    const { buildRequestMessage, sendRequest } = useOpenAI(endpoint);
     const messages = buildRequestMessage([
       'image to text',
       {
