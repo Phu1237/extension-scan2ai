@@ -89,7 +89,8 @@
       :items="apiModelList"
       item-title="name"
       item-value="value"
-      v-model="apiModel"
+      v-model="apiModelListModel"
+      @update:modelValue="updateApiModel"
       persistent-hint
     >
       <template v-slot:prepend v-if="api === 'gemini'">
@@ -112,13 +113,7 @@
         <div v-html="apiHint?.model"></div>
       </template>
     </v-select>
-    <v-text-field
-      label="Assistant model name (*)"
-      class="mb-2"
-      v-model="apiModelName"
-      :disabled="apiModelName !== 'custom'"
-      persistent-hint
-    >
+    <v-text-field label="Assistant model name (*)" class="mb-2" v-model="apiModel" persistent-hint>
       <template v-slot:append>
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
@@ -235,8 +230,12 @@ const fetchData = async () => {
 
 watch(api, (newAPI) => {
   if (!newAPI) return;
-  apiModel.value =
-    chromeSync.value?.apiInfo?.[newAPI]?.apiModel ?? DEFAULT.apiInfo[newAPI].apiModel;
+  let apiModelValue = DEFAULT.apiInfo[newAPI].apiModel;
+  let storageApiModel = chromeSync.value?.apiInfo?.[newAPI];
+  if (storageApiModel) {
+    apiModelValue = storageApiModel.apiModel;
+  }
+  apiModel.value = apiModelValue;
   apiKey.value = '';
   oldApiKey.value = chromeLocal.value?.apiKey?.[newAPI] ?? '';
 });
@@ -245,10 +244,18 @@ const apiModelList = computed(() => {
   if (!api.value) return [];
   return API_MODEL_LIST[api.value];
 });
-const apiModelName = computed(() => {
+const apiModelListModel = computed(() => {
   if (!api.value) return '';
-  return API_MODEL_LIST[api.value]?.find((item) => item.value === apiModel.value)?.value;
+  let apiModelValue = API_MODEL_LIST[api.value]?.find((item) => item.value === apiModel.value);
+  if (apiModelValue) {
+    return apiModelValue.value;
+  }
+  return '';
 });
+const updateApiModel = (value: string) => {
+  apiModel.value = value;
+};
+
 const apiKeyPlaceholder = computed(() => {
   return maskAPIKey(oldApiKey.value ?? '');
 });

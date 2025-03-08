@@ -160,6 +160,6 @@ export const XAI = {
 export const MORE = {
   CUSTOM: {
     name: 'Custom',
-    value: 'custom'
+    value: ''
   }
 };

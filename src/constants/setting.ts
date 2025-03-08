@@ -1,4 +1,4 @@
-import { API, GEMINI, OPENAI, XAI, MORE, DEEPSEEK } from '@/constants/ai';
+import { API, GEMINI, OPENAI, XAI, MORE } from '@/constants/ai';
 import { HELLO_WORLD_IMAGE } from '@/constants/sample';
 import { CAPTURE_METHOD_VALUE, SELECTING_METHOD_VALUE } from './common';
 import type { DefaultStorage } from '@/types/storage';
