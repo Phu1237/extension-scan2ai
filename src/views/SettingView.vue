@@ -357,9 +357,12 @@ const test = async () => {
       jsonResult.candidates?.[0]?.content.parts?.[0]?.text ??
       jsonResult.error?.message ??
       'Unexpected error. Check raw result.';
-  } else if (api.value === 'openai' || api.value === 'xai') {
+  } else if (api.value === 'openai' || api.value === 'deepseek' || api.value === 'xai') {
     let endpoint = API.OPENAI.uri;
     switch (api.value) {
+      case 'deepseek':
+        endpoint = API.DEEPSEEK.uri;
+        break;
       case 'xai':
         endpoint = API.XAI.uri;
     }

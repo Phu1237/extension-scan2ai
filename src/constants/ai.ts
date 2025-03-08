@@ -1,4 +1,15 @@
 export const API = {
+  DEEPSEEK: {
+    name: 'DeepSeek',
+    value: 'deepseek',
+    hint: {
+      model:
+        'DeepSeek Models Document: <a href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank">here</a>',
+      api_key:
+        'Follow this instructions to get <a href="https://api-docs.deepseek.com/" target="_blank">xAI API key</a>.'
+    },
+    uri: 'https://api.deepseek.com/chat/completions'
+  },
   GEMINI: {
     name: 'Gemini',
     value: 'gemini',
@@ -31,6 +42,19 @@ export const API = {
         'Follow this instructions to get <a href="https://docs.x.ai/docs/introduction" target="_blank">xAI API key</a>.'
     },
     uri: 'https://api.x.ai/v1/chat/completions'
+  }
+};
+
+// https://docs.x.ai/docs/models
+// https://console.x.ai/team/default/api-keys
+export const DEEPSEEK = {
+  DEEPSEEK_CHAT: {
+    name: 'DeepSeek-V3',
+    value: 'deepseek-chat'
+  },
+  DEEPSEEK_REASONER: {
+    name: 'DeepSeek-R1',
+    value: 'deepseek-reasoner'
   }
 };
 

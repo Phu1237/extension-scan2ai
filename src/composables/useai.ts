@@ -13,7 +13,9 @@ interface ChromeStorages {
 
 export default function useAI() {
   const getAIName = (name: string) => {
-    if (name === 'gemini') {
+    if (name === 'deepseek') {
+      return 'DeepSeek';
+    } else if (name === 'gemini') {
       return 'Gemini';
     } else if (name === 'openai') {
       return 'OpenAI';
@@ -73,9 +75,12 @@ export default function useAI() {
           }
         ).then((response) => resolve(response));
         return;
-      } else if (api === 'openai' || api === 'xai') {
+      } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
         let endpoint = API.OPENAI.uri;
         switch (api) {
+          case 'deepseek':
+            endpoint = API.DEEPSEEK.uri;
+            break;
           case 'xai':
             endpoint = API.XAI.uri;
         }
@@ -132,7 +137,7 @@ export default function useAI() {
         jsonResult.error?.message ??
         jsonResult.candidates?.[0]?.finishReason ??
         'Unexpected error. Check raw result.';
-    } else if (api === 'openai' || api === 'xai') {
+    } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
       jsonResult = await response.json();
       result =
         jsonResult.choices?.[0]?.message.content ??
