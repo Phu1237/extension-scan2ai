@@ -175,7 +175,7 @@
   overflow: hidden;
 }
 
-#scan2ai-result-dialog .header {
+#scan2ai-result-dialog > .header {
   padding: 16px 24px;
   border-bottom: 1px solid #e9ecef;
   display: flex;
@@ -183,7 +183,7 @@
   justify-content: space-between;
 }
 
-#scan2ai-result-dialog .header h2 {
+#scan2ai-result-dialog > .header h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
@@ -394,7 +394,7 @@ button#scan2ai-result-dialog-close:hover {
 }
 
 /* Quick Actions */
-#scan2ai-toolbar .actions {
+#scan2ai-html .scan2ai-toolbar .actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
