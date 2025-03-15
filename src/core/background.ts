@@ -161,8 +161,15 @@ chrome.runtime.onMessage.addListener(async function (
     case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
       chrome.windows.create({ url: 'ui.html#/setting', type: 'popup' });
       break;
-    case CHROME_MESSAGE_BACKGROUND_ACTION.SCAN:
-      chrome.windows.create({ url: 'ui.html#/', type: 'popup' });
+    case CHROME_MESSAGE_BACKGROUND_ACTION.SCAN: {
+      let url = 'ui.html#/';
+      if (request.value) {
+        url = `${url}?${new URLSearchParams({
+          action: request.value
+        }).toString()}`;
+      }
+      chrome.windows.create({ url: url, type: 'popup' });
       break;
+    }
   }
 });

@@ -2,7 +2,8 @@ import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
 import {
   CHROME_MESSAGE_BACKGROUND_ACTION,
-  CHROME_MESSAGE_CONTENT_ACTION
+  CHROME_MESSAGE_CONTENT_ACTION,
+  DEFAULT_EXTRA_CONTENTS
 } from './content/constants';
 import {
   crop,
@@ -15,7 +16,7 @@ import captureChromeAPIVisibleContent from './capture/chrome-api-visible-content
 import useSelecting from './selecting';
 
 const { isFullPage, capturePlace, captureType } = captureChromeAPIVisibleContent();
-const { selectingDragAndDrop, selectingClickToStartAndEnd } = useSelecting();
+const { selectingDragAndDrop } = useSelecting();
 const { init: initSelecting, destroy: destroySelecting } = selectingDragAndDrop();
 
 const log = (...args: any) => {
@@ -33,11 +34,34 @@ const log = (...args: any) => {
   }
 };
 
-function onChromeMessage(
-  request: any,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: () => any
-) {
+function addQuickActionButtons() {
+  chrome.storage.sync.get(['extraContent'], (res) => {
+    const shadowEl = document.getElementById('scan2ai')!;
+    const shadow = shadowEl.shadowRoot!;
+    const quickScanEl = shadow.getElementById('scan2ai-result-quick-scan')!;
+    quickScanEl.classList.remove('hidden');
+
+    const quickScanActionsEl = shadow.getElementById('scan2ai-result-quick-scan-actions')!;
+    quickScanActionsEl.innerHTML = '';
+    const quickActions = [...DEFAULT_EXTRA_CONTENTS];
+    const extraContent = res.extraContent || [];
+    quickActions.push(...extraContent);
+    quickActions.forEach((action: string) => {
+      const btn = document.createElement('button');
+      btn.textContent = action;
+      btn.classList.add('btn', 'btn-primary', 'm-1');
+      btn.addEventListener('click', () => {
+        chrome.runtime.sendMessage({
+          action: CHROME_MESSAGE_BACKGROUND_ACTION.SCAN,
+          value: action
+        });
+      });
+      quickScanActionsEl.appendChild(btn);
+    });
+  });
+}
+
+function onChromeMessage(request: any) {
   log('listen', request);
   if (request.result) {
     if (request.result === 'selected') {
@@ -57,7 +81,7 @@ function onChromeMessage(
     case CHROME_MESSAGE_CONTENT_ACTION.DESTROY:
       document.getElementById('scan2ai')?.remove();
       destroySelecting();
-      // chrome.runtime.onMessage.removeListener(onChromeMessage);
+      hideOverflow(false);
       break;
     case CHROME_MESSAGE_CONTENT_ACTION.SHOW_RESULT: {
       const shadowEl = document.getElementById('scan2ai')!;
@@ -66,6 +90,9 @@ function onChromeMessage(
       selectEl.classList.add('hidden');
       const resultEl = shadow.getElementById('scan2ai-result')!;
       resultEl.classList.remove('hidden');
+      const quickScanEl = shadow.getElementById('scan2ai-result-quick-scan')!;
+      quickScanEl.classList.add('hidden');
+      addQuickActionButtons();
       break;
     }
   }
@@ -93,7 +120,7 @@ function initExtension() {
   const shadow = extension.attachShadow({ mode: 'open' });
   const html = document.createElement('div');
   html.id = 'scan2ai-html';
-  html.innerHTML = extHtml.replace('{{logo_url}}', chrome.runtime.getURL('/icons/icon.png'));
+  html.innerHTML = extHtml;
   html.style.width = '100%';
   html.style.height = '100%';
   shadow.appendChild(html);
@@ -115,14 +142,18 @@ function initExtension() {
     selectAreaEl.classList.add('hidden');
   });
   /**
-   * Toolbar buttons
+   * Button events
    */
+  // Toolbar button
   shadow.getElementById('scan2ai-toolbar-btn')?.addEventListener('click', (el) => {
     const btnEl = el.currentTarget as HTMLElement;
     btnEl.classList.toggle('active');
+    btnEl.querySelector('#open-toolbar-icon')?.classList.toggle('hidden');
+    btnEl.querySelector('#close-toolbar-icon')?.classList.toggle('hidden');
     const actionsEl = shadow.getElementById('scan2ai-toolbar-actions')!;
     actionsEl.classList.toggle('hidden');
   });
+  // Other toolbar buttons
   shadow.querySelectorAll('[data-name="scan2ai-toolbar-action"]').forEach((el) => {
     el.addEventListener('click', () => {
       const action = el.getAttribute('data-action');
@@ -132,6 +163,7 @@ function initExtension() {
         case CHROME_MESSAGE_BACKGROUND_ACTION.HISTORY:
         case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
         case CHROME_MESSAGE_BACKGROUND_ACTION.INSTRUCTION:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
           chrome.runtime.sendMessage({
             action: el.getAttribute('data-action')
           });

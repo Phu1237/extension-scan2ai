@@ -1,6 +1,15 @@
 <template>
   <v-card>
     <v-img height="300px" :src="image"></v-img>
+    <v-btn
+      color="primary"
+      class="mx-4"
+      :loading="clickActionLoading"
+      :disabled="clickActionLoading"
+      @click="() => {}"
+    >
+      Refresh scan image
+    </v-btn>
 
     <template v-if="!hasApiKeySetting">
       <v-card-title>
@@ -92,12 +101,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import router from '@/router';
 import type { PropType } from 'vue';
 import type { Storage } from '@/types/storage';
 import useAI from '@/composables/useai';
 
+const route = useRoute();
 const { sendRequest, handleResponse } = useAI();
 
 const props = defineProps({
@@ -153,6 +164,7 @@ const onClickAction = async (action: string) => {
   }
   clickActionLoading.value = false;
 };
+
 const customAction = ref<string>('');
 const onClickActionCustom = async () => {
   const customActionValue = customAction.value.trim();
@@ -198,5 +210,11 @@ const onClickSetting = () => {
 
 const hasApiKeySetting = computed(() => {
   return Boolean(props.chromeSync.api ? props.chromeLocal.apiKey?.[props.chromeSync.api] : false);
+});
+watch(hasApiKeySetting, () => {
+  if (route.query.action) {
+    const action = route.query.action as string;
+    onClickAction(action);
+  }
 });
 </script>

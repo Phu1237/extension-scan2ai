@@ -1,7 +1,6 @@
-import { API } from '@/constants/ai';
 import type { RequestContent } from '@/types/ai';
 
-export default function useOpenAI() {
+export default function useOpenAI(endpoint: string) {
   const buildRequestMessage = (messages: Array<any>, previousMessages: Array<any> = []) => {
     const requestMessages = previousMessages;
     const content = messages.map((message) => {
@@ -34,7 +33,7 @@ export default function useOpenAI() {
     }
   };
   const sendRequest = (attributes: any, payload: any): Promise<Response> => {
-    return fetch(`${API.OPENAI.uri}`, {
+    return fetch(`${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

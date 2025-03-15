@@ -4,6 +4,7 @@ import useCommon from './usecommon';
 import useChromeStorage from './usechromestorage';
 import useGemini from './ai/usegemini';
 import useOpenAI from './ai/useopenai';
+import { API } from '@/constants/ai';
 
 interface ChromeStorages {
   local: Storage;
@@ -12,10 +13,14 @@ interface ChromeStorages {
 
 export default function useAI() {
   const getAIName = (name: string) => {
-    if (name === 'gemini') {
+    if (name === 'deepseek') {
+      return 'DeepSeek';
+    } else if (name === 'gemini') {
       return 'Gemini';
     } else if (name === 'openai') {
       return 'OpenAI';
+    } else if (name === 'xai') {
+      return 'xAI';
     } else {
       throw new Error(`Unsupported AI name: ${name}`);
     }
@@ -70,9 +75,17 @@ export default function useAI() {
           }
         ).then((response) => resolve(response));
         return;
-      } else if (api === 'openai') {
+      } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
+        let endpoint = API.OPENAI.uri;
+        switch (api) {
+          case 'deepseek':
+            endpoint = API.DEEPSEEK.uri;
+            break;
+          case 'xai':
+            endpoint = API.XAI.uri;
+        }
         const { useOpenAI } = useAI();
-        const { buildRequestMessage, sendRequest } = useOpenAI();
+        const { buildRequestMessage, sendRequest } = useOpenAI(endpoint);
         const messages = buildRequestMessage([
           action,
           {
@@ -91,7 +104,7 @@ export default function useAI() {
         ).then((response) => resolve(response));
         return;
       }
-      reject('Unsupported Assistent API or unexpected error');
+      reject('Unsupported Assistant API or unexpected error');
     });
   };
   const handleResponse = async (storages: ChromeStorages, response: Response) => {
@@ -124,7 +137,7 @@ export default function useAI() {
         jsonResult.error?.message ??
         jsonResult.candidates?.[0]?.finishReason ??
         'Unexpected error. Check raw result.';
-    } else if (api === 'openai') {
+    } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
       jsonResult = await response.json();
       result =
         jsonResult.choices?.[0]?.message.content ??
