@@ -34,20 +34,19 @@ const log = (...args: any) => {
   }
 };
 
-function addFastActionButtons() {
+function addQuickActionButtons() {
   chrome.storage.sync.get(['extraContent'], (res) => {
     const shadowEl = document.getElementById('scan2ai')!;
     const shadow = shadowEl.shadowRoot!;
-    const fastScanEl = shadow.getElementById('scan2ai-result-fast-scan')!;
-    fastScanEl.classList.remove('hidden');
+    const quickScanEl = shadow.getElementById('scan2ai-result-quick-scan')!;
+    quickScanEl.classList.remove('hidden');
 
-    const fastScanActionsEl = shadow.getElementById('scan2ai-result-fast-scan-actions')!;
-    // fastScanActionsEl.style.width = shadow.getElementById('scan2ai-canvas')?.clientWidth + 'px';
-    fastScanActionsEl.innerHTML = '';
-    const fastActions = [...DEFAULT_EXTRA_CONTENTS];
+    const quickScanActionsEl = shadow.getElementById('scan2ai-result-quick-scan-actions')!;
+    quickScanActionsEl.innerHTML = '';
+    const quickActions = [...DEFAULT_EXTRA_CONTENTS];
     const extraContent = res.extraContent || [];
-    fastActions.push(...extraContent);
-    fastActions.forEach((action: string) => {
+    quickActions.push(...extraContent);
+    quickActions.forEach((action: string) => {
       const btn = document.createElement('button');
       btn.textContent = action;
       btn.classList.add('btn', 'btn-primary', 'm-1');
@@ -57,7 +56,7 @@ function addFastActionButtons() {
           value: action
         });
       });
-      fastScanActionsEl.appendChild(btn);
+      quickScanActionsEl.appendChild(btn);
     });
   });
 }
@@ -91,9 +90,9 @@ function onChromeMessage(request: any) {
       selectEl.classList.add('hidden');
       const resultEl = shadow.getElementById('scan2ai-result')!;
       resultEl.classList.remove('hidden');
-      const fastScanEl = shadow.getElementById('scan2ai-result-fast-scan')!;
-      fastScanEl.classList.add('hidden');
-      addFastActionButtons();
+      const quickScanEl = shadow.getElementById('scan2ai-result-quick-scan')!;
+      quickScanEl.classList.add('hidden');
+      addQuickActionButtons();
       break;
     }
   }
