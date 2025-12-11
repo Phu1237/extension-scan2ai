@@ -61,6 +61,30 @@
         </v-tooltip>
       </template>
     </v-combobox>
+    <v-select
+      label="Fast Forward Default Command"
+      :items="commandList"
+      v-model="fastForwardCommand"
+      class="mb-2"
+      :disabled="!isFastForward"
+      persistent-hint
+    >
+      <template v-slot:prepend>
+        <v-checkbox-btn
+          v-model="isFastForward"
+          color="primary"
+          hide-details
+        ></v-checkbox-btn>
+      </template>
+      <template v-slot:append>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+          </template>
+          Automatically execute the default command after capture, skipping the popup.
+        </v-tooltip>
+      </template>
+    </v-select>
   </div>
   <div class="mb-3">
     <h2 class="mb-2">Assistant settings</h2>
@@ -93,14 +117,6 @@
       @update:modelValue="updateApiModel"
       persistent-hint
     >
-      <template v-slot:prepend v-if="api === 'gemini'">
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-checkbox-btn v-bind="props" v-model="apiModelUseLatest"></v-checkbox-btn>
-          </template>
-          {{ TOOLTIP.API_MODEL_USE_LATEST }}
-        </v-tooltip>
-      </template>
       <template v-slot:append>
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
@@ -120,6 +136,23 @@
             <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
           </template>
           {{ TOOLTIP.API_MODEL_NAME }}
+        </v-tooltip>
+      </template>
+    </v-text-field>
+    <v-text-field
+      v-if="api === 'openai-compatible'"
+      label="Base URL (*)"
+      hint="e.g. http://localhost:11434/v1/chat/completions"
+      class="mb-2"
+      v-model="apiUrl"
+      persistent-hint
+    >
+      <template v-slot:append>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+          </template>
+          Enter the full URL for the chat completions endpoint.
         </v-tooltip>
       </template>
     </v-text-field>
@@ -167,6 +200,10 @@ import type { Storage } from '@/types/storage';
 import { API } from '@/constants/ai';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
+  CHROME_STORAGE_KEY,
+  DEFAULT_EXTRA_CONTENTS
+} from '@/core/content/constants?inline';
+import {
   TOOLTIP,
   DEFAULT,
   CAPTURE_METHOD_LIST,
@@ -199,9 +236,12 @@ const image = ref<string>('');
 const captureMethod = ref<string>();
 const selectingMethod = ref<number>();
 const historyLimitSize = ref<number>();
+const isFastForward = ref<boolean>(false);
+const fastForwardCommand = ref<string>('');
+const extraContent = ref<string[]>([]);
 const api = ref<string>();
 const apiModel = ref<string>();
-const apiModelUseLatest = ref<boolean>();
+const apiUrl = ref<string>();
 const apiKey = ref<string>();
 const oldApiKey = ref<string>();
 const chromeLocalUsage = ref<number>();
@@ -219,10 +259,13 @@ const fetchData = async () => {
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
+  isFastForward.value = sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD] ?? DEFAULT.isFastForward;
+  fastForwardCommand.value =
+    sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND] ?? DEFAULT.fastForwardCommand;
+  extraContent.value = sync.extraContent ?? DEFAULT.extraContent;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
-  apiModelUseLatest.value =
-    sync.apiInfo?.[api.value]?.useLatest ?? !!DEFAULT.apiInfo.gemini.useLatest;
+  apiUrl.value = sync.apiInfo?.[api.value]?.apiUrl ?? '';
 
   const { usage } = await getStorageUsage(CHROME_STORAGE.LOCAL);
   chromeLocalUsage.value = Math.round(usage * 100);
@@ -235,7 +278,9 @@ watch(api, (newAPI) => {
   if (storageApiModel) {
     apiModelValue = storageApiModel.apiModel;
   }
+
   apiModel.value = apiModelValue;
+  apiUrl.value = chromeSync.value?.apiInfo?.[newAPI]?.apiUrl ?? '';
   apiKey.value = '';
   oldApiKey.value = chromeLocal.value?.apiKey?.[newAPI] ?? '';
 });
@@ -265,6 +310,9 @@ const captureMethodHint = computed(() => {
     (item) => item.value === captureMethod.value
   );
   return captureMethodWithHint?.hint;
+});
+const commandList = computed(() => {
+  return [...DEFAULT_EXTRA_CONTENTS, ...extraContent.value];
 });
 const apiHint = computed(() => {
   const apiWithHint = API_LIST.find((item) => item.value === api.value);
@@ -298,7 +346,6 @@ const check = () => {
   );
   log('api', api.value);
   log('apiModel', apiModel.value);
-  log('apiModelUseLatest', apiModelUseLatest.value);
   log('apiKey', apiKey.value);
 };
 
@@ -319,10 +366,12 @@ const setData = async () => {
     apiInfo: {
       [api.value]: {
         apiModel: apiModel.value?.trim() ?? '',
-        useLatest: apiModelUseLatest.value
+        apiUrl: apiUrl.value?.trim() ?? ''
       }
     },
-    historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
+    historyLimitSize: parseInt(historyLimitSize.value as unknown as string),
+    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD]: isFastForward.value,
+    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND]: fastForwardCommand.value
   });
   alert('Update setting successfully!');
 };
@@ -351,7 +400,6 @@ const test = async () => {
     rawResult = await sendRequest(
       {
         api_model: apiModel.value?.trim(),
-        use_latest: apiModelUseLatest.value,
         api_key: oldApiKey.value?.trim()
       },
       {
@@ -364,7 +412,12 @@ const test = async () => {
       jsonResult.candidates?.[0]?.content.parts?.[0]?.text ??
       jsonResult.error?.message ??
       'Unexpected error. Check raw result.';
-  } else if (api.value === 'openai' || api.value === 'deepseek' || api.value === 'xai') {
+  } else if (
+    api.value === 'openai' ||
+    api.value === 'deepseek' ||
+    api.value === 'xai' ||
+    api.value === 'openai-compatible'
+  ) {
     let endpoint = API.OPENAI.uri;
     switch (api.value) {
       case 'deepseek':
@@ -372,6 +425,10 @@ const test = async () => {
         break;
       case 'xai':
         endpoint = API.XAI.uri;
+        break;
+      case 'openai-compatible':
+        endpoint = apiUrl.value?.trim() ?? '';
+        break;
     }
     const { useOpenAI } = useAI();
     const { buildRequestMessage, sendRequest } = useOpenAI(endpoint);
@@ -400,8 +457,7 @@ const test = async () => {
   const newHistory = {
     api: api.value,
     apiInfo: {
-      apiModel: apiModel.value?.trim() ?? '',
-      useLatest: apiModelUseLatest.value
+      apiModel: apiModel.value?.trim() ?? ''
     },
     session: {
       content: image.value,

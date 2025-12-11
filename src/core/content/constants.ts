@@ -1,12 +1,14 @@
 export const CHROME_STORAGE_KEY = {
   LOCAL: {},
   SYNC: {
-    FAST_FORWARD: 'fast-forward'
+    FAST_FORWARD: 'fast-forward',
+    FAST_FORWARD_COMMAND: 'fast-forward-command'
   }
 };
 
 export const CHROME_MESSAGE_BACKGROUND_ACTION = {
   CLIPBOARD_SCAN: 'clipboard-scan',
+  FAST_FORWARD: 'fast-forward',
   HISTORY: 'history',
   INSTRUCTION: 'instruction',
   TURN_OFF: 'turn-off',

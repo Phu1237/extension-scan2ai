@@ -37,8 +37,6 @@ export default function useGemini() {
   const sendRequest = (attributes: any, payload: any): Promise<Response> => {
     let uri = API.GEMINI.uri;
     uri = uri.replace('{{api_model}}', attributes.api_model);
-    const useLatest = attributes.use_latest ? '-latest' : '';
-    uri = uri.replace('{{use_latest}}', useLatest);
     uri = uri.replace('{{api_key}}', attributes.api_key);
     return fetch(uri, {
       method: 'POST',

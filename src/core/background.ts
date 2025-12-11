@@ -83,7 +83,7 @@ chrome.action.onClicked.addListener(async (tab) => {
             'content.js'
           ]
         },
-        () => {}
+        () => { }
       );
     } else {
       chrome.tabs.sendMessage(tab.id, {
