@@ -1,4 +1,4 @@
-import { API, GEMINI, OPENAI, XAI, MORE } from '@/constants/ai';
+import { API, GEMINI, OPENAI, XAI, MORE, DEEPSEEK } from '@/constants/ai';
 import { HELLO_WORLD_IMAGE } from '@/constants/sample';
 import { CAPTURE_METHOD_VALUE, SELECTING_METHOD_VALUE } from './common';
 import type { DefaultStorage } from '@/types/storage';
@@ -46,17 +46,40 @@ export const HISTORY_LIMIT_SIZE_LIST = [4, 8, 12, 16, 20, 24];
 export const API_LIST = [API.DEEPSEEK, API.GEMINI, API.OPENAI, API.XAI];
 
 export const API_MODEL_LIST = {
-  [API.DEEPSEEK.value]: [MORE.CUSTOM],
-  [API.GEMINI.value]: [
-    GEMINI.GEMINI_1_5_FLASH,
-    GEMINI.GEMINI_1_5_FLASH_8B,
-    GEMINI.GEMINI_1_5_PRO,
-    GEMINI.GEMINI_2_0_FLASH,
-    GEMINI.GEMINI_2_0_FLASH_LITE,
+  [API.DEEPSEEK.value]: [
+    DEEPSEEK.DEEPSEEK_CHAT,
+    DEEPSEEK.DEEPSEEK_REASONER,
     MORE.CUSTOM
   ],
-  [API.OPENAI.value]: [OPENAI.GPT_4, OPENAI.GPT_4_TURBO, OPENAI.GPT_4O, MORE.CUSTOM],
-  [API.XAI.value]: [XAI.GROK_VISION_BETA, XAI.GROK_2_VISION_1212, MORE.CUSTOM]
+  [API.GEMINI.value]: [
+    GEMINI.GEMINI_2_0_FLASH,
+    GEMINI.GEMINI_2_0_FLASH_LITE,
+    GEMINI.GEMINI_2_5_FLASH,
+    GEMINI.GEMINI_2_5_FLASH_LITE,
+    GEMINI.GEMINI_2_5_PRO,
+    MORE.CUSTOM
+  ],
+  [API.OPENAI.value]: [
+    OPENAI.GPT_4O,
+    OPENAI.GPT_4O_MINI,
+    OPENAI.O1_MINI,
+    OPENAI.GPT_4_1,
+    OPENAI.GPT_5,
+    OPENAI.GPT_5_MINI,
+    OPENAI.GPT_5_NANO,
+    OPENAI.GPT_5_PRO,
+    OPENAI.GPT_5_1,
+    MORE.CUSTOM
+  ],
+  [API.XAI.value]: [
+    XAI.GROK_2_VISION_1212,
+    XAI.GROK_4_FAST_REASONING,
+    XAI.GROK_4_FAST_NON_REASONING,
+    XAI.GROK_4_1_FAST_REASONING,
+    XAI.GROK_4_1_FAST_NON_REASONING,
+    XAI.GROK_CODE_FAST_1,
+    MORE.CUSTOM
+  ]
 };
 
 export const TOOLTIP = {
@@ -65,7 +88,6 @@ export const TOOLTIP = {
   HISTORY_LIMIT_SIZE: 'Limit the number of saved history records. -1 for unlimited',
   API: 'Choose the AI assistant to use.',
   API_MODEL: 'Choose the AI model to use.',
-  API_MODEL_USE_LATEST: 'Using the latest update of the model or not.',
   API_MODEL_NAME: 'In case the AI model is not available in the list yet, please fill it out here.',
   API_KEY: 'A unique identifier that allows you to authenticate and access their services.'
 };
@@ -76,17 +98,16 @@ export const DEFAULT: DefaultStorage = {
   api: API.GEMINI.value,
   apiInfo: {
     [API.DEEPSEEK.value]: {
-      apiModel: MORE.CUSTOM.value
+      apiModel: DEEPSEEK.DEEPSEEK_CHAT.value
     },
     [API.GEMINI.value]: {
-      apiModel: GEMINI.GEMINI_1_5_FLASH.value,
-      useLatest: true
+      apiModel: GEMINI.GEMINI_2_5_FLASH_LITE.value
     },
     [API.OPENAI.value]: {
-      apiModel: OPENAI.GPT_4O.value
+      apiModel: OPENAI.GPT_5_1.value
     },
     [API.XAI.value]: {
-      apiModel: XAI.GROK_2_VISION_1212.value
+      apiModel: XAI.GROK_4_1_FAST_NON_REASONING.value
     }
   },
   image: HELLO_WORLD_IMAGE,

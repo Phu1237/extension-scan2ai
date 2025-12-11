@@ -93,14 +93,6 @@
       @update:modelValue="updateApiModel"
       persistent-hint
     >
-      <template v-slot:prepend v-if="api === 'gemini'">
-        <v-tooltip location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-checkbox-btn v-bind="props" v-model="apiModelUseLatest"></v-checkbox-btn>
-          </template>
-          {{ TOOLTIP.API_MODEL_USE_LATEST }}
-        </v-tooltip>
-      </template>
       <template v-slot:append>
         <v-tooltip location="bottom">
           <template v-slot:activator="{ props }">
@@ -201,7 +193,6 @@ const selectingMethod = ref<number>();
 const historyLimitSize = ref<number>();
 const api = ref<string>();
 const apiModel = ref<string>();
-const apiModelUseLatest = ref<boolean>();
 const apiKey = ref<string>();
 const oldApiKey = ref<string>();
 const chromeLocalUsage = ref<number>();
@@ -221,8 +212,6 @@ const fetchData = async () => {
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
-  apiModelUseLatest.value =
-    sync.apiInfo?.[api.value]?.useLatest ?? !!DEFAULT.apiInfo.gemini.useLatest;
 
   const { usage } = await getStorageUsage(CHROME_STORAGE.LOCAL);
   chromeLocalUsage.value = Math.round(usage * 100);
@@ -298,7 +287,6 @@ const check = () => {
   );
   log('api', api.value);
   log('apiModel', apiModel.value);
-  log('apiModelUseLatest', apiModelUseLatest.value);
   log('apiKey', apiKey.value);
 };
 
@@ -318,8 +306,7 @@ const setData = async () => {
     api: api.value.trim(),
     apiInfo: {
       [api.value]: {
-        apiModel: apiModel.value?.trim() ?? '',
-        useLatest: apiModelUseLatest.value
+        apiModel: apiModel.value?.trim() ?? ''
       }
     },
     historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
@@ -351,7 +338,6 @@ const test = async () => {
     rawResult = await sendRequest(
       {
         api_model: apiModel.value?.trim(),
-        use_latest: apiModelUseLatest.value,
         api_key: oldApiKey.value?.trim()
       },
       {
@@ -400,8 +386,7 @@ const test = async () => {
   const newHistory = {
     api: api.value,
     apiInfo: {
-      apiModel: apiModel.value?.trim() ?? '',
-      useLatest: apiModelUseLatest.value
+      apiModel: apiModel.value?.trim() ?? ''
     },
     session: {
       content: image.value,

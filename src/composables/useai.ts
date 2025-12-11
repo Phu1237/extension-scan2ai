@@ -4,7 +4,8 @@ import useCommon from './usecommon';
 import useChromeStorage from './usechromestorage';
 import useGemini from './ai/usegemini';
 import useOpenAI from './ai/useopenai';
-import { API } from '@/constants/ai';
+import { API, GEMINI, XAI, DEEPSEEK, MORE } from '@/constants/ai';
+import { DEFAULT } from '@/constants/setting';
 
 interface ChromeStorages {
   local: Storage;
@@ -50,8 +51,35 @@ export default function useAI() {
       const api = sync.api;
       const apiKey = local.apiKey[api];
       const image = local.image ?? HELLO_WORLD_IMAGE;
-      const apiModel = sync.apiInfo[api].apiModel;
-      const apiModelUseLatest = sync.apiInfo[api].useLatest ?? true;
+      let apiModel = sync.apiInfo[api].apiModel;
+
+      // Fallback for removed Gemini models
+      if (
+        api === 'gemini' &&
+        [
+          GEMINI.GEMINI_1_5_FLASH.value,
+          GEMINI.GEMINI_1_5_FLASH_8B.value,
+          GEMINI.GEMINI_1_5_PRO.value
+        ].includes(apiModel)
+      ) {
+        apiModel = DEFAULT.apiInfo?.[API.GEMINI.value]?.apiModel ?? '';
+      }
+
+      // Fallback for removed OpenAI models
+      if (api === 'openai' && ([] as string[]).includes(apiModel)) {
+        apiModel = DEFAULT.apiInfo?.[API.OPENAI.value]?.apiModel ?? '';
+      }
+
+      // Fallback for removed xAI models
+      if (api === 'xai' && [XAI.GROK_VISION_BETA.value].includes(apiModel)) {
+        apiModel = DEFAULT.apiInfo?.[API.XAI.value]?.apiModel ?? '';
+      }
+
+      // Fallback for removed DeepSeek models
+      if (api === 'deepseek' && ([] as string[]).includes(apiModel)) {
+        apiModel = DEFAULT.apiInfo?.[API.DEEPSEEK.value]?.apiModel ?? '';
+      }
+
       if (api === 'gemini') {
         const { base64ImageToImageObject } = useCommon();
         const { useGemini } = useAI();
@@ -67,7 +95,6 @@ export default function useAI() {
         sendRequest(
           {
             api_model: apiModel,
-            use_latest: apiModelUseLatest,
             api_key: apiKey
           },
           {
@@ -125,7 +152,7 @@ export default function useAI() {
     const api = sync.api;
     const image = local.image ?? HELLO_WORLD_IMAGE;
     const apiModel = sync.apiInfo[api].apiModel;
-    const apiModelUseLatest = sync.apiInfo[api].useLatest ?? true;
+
     const { pushChromeStorageHistory } = useChromeStorage();
     let jsonResult: any;
     let result: string = '';
@@ -147,8 +174,7 @@ export default function useAI() {
     const newHistory = {
       api: api,
       apiInfo: {
-        apiModel: apiModel,
-        useLatest: apiModelUseLatest
+        apiModel: apiModel
       },
       session: {
         content: image,

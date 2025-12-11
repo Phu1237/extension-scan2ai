@@ -19,7 +19,7 @@ export const API = {
       api_key:
         'Follow this instructions to get <a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank">Gemini API key</a>.'
     },
-    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}{{use_latest}}:generateContent?key={{api_key}}'
+    uri: 'https://generativelanguage.googleapis.com/v1beta/models/{{api_model}}:generateContent?key={{api_key}}'
   },
   OPENAI: {
     name: 'OpenAI',
@@ -49,12 +49,12 @@ export const API = {
 // https://api-docs.deepseek.com/
 export const DEEPSEEK = {
   DEEPSEEK_CHAT: {
-    name: 'DeepSeek Chat (V3)',
+    name: 'DeepSeek Chat',
     value: 'deepseek-chat',
     supports: ['text']
   },
   DEEPSEEK_REASONER: {
-    name: 'DeepSeek Reasoner (R1)',
+    name: 'DeepSeek Reasoner',
     value: 'deepseek-reasoner',
     supports: ['text']
   }
@@ -88,6 +88,21 @@ export const GEMINI = {
     value: 'gemini-2.0-flash-lite',
     supports: ['text', 'image']
   },
+  GEMINI_2_5_FLASH: {
+    name: 'Gemini 2.5 Flash',
+    value: 'gemini-2.5-flash',
+    supports: ['text', 'image']
+  },
+  GEMINI_2_5_FLASH_LITE: {
+    name: 'Gemini 2.5 Flash-Lite',
+    value: 'gemini-2.5-flash-lite',
+    supports: ['text', 'image']
+  },
+  GEMINI_2_5_PRO: {
+    name: 'Gemini 2.5 Pro',
+    value: 'gemini-2.5-pro',
+    supports: ['text', 'image']
+  },
   TEXT_EMBEDDING_004: {
     name: 'Text Embedding 004',
     value: 'text-embedding-004',
@@ -101,7 +116,7 @@ export const GEMINI = {
 };
 
 // https://platform.openai.com/docs/models
-// https://aistudio.google.com/app/apikey
+// https://platform.openai.com/api-keys
 export const OPENAI = {
   GPT_3_5_TURBO: {
     name: 'GPT-3.5 Turbo',
@@ -123,29 +138,54 @@ export const OPENAI = {
     value: 'gpt-4o',
     supports: ['text', 'image']
   },
-  TEXT_DAVINCI_003: {
-    name: 'Text Davinci 003',
-    value: 'text-davinci-003',
+  GPT_4O_MINI: {
+    name: 'GPT-4o Mini',
+    value: 'gpt-4o-mini',
+    supports: ['text', 'image']
+  },
+  O1_PREVIEW: {
+    name: 'o1-preview',
+    value: 'o1-preview',
     supports: ['text']
   },
-  DALL_E_2: {
-    name: 'DALL·E 2',
-    value: 'dall-e-2',
+  O1_MINI: {
+    name: 'o1-mini',
+    value: 'o1-mini',
     supports: ['text']
+  },
+  GPT_4_1: {
+    name: 'GPT-4.1',
+    value: 'gpt-4.1',
+    supports: ['text', 'image']
+  },
+  GPT_5: {
+    name: 'GPT-5',
+    value: 'gpt-5',
+    supports: ['text', 'image']
+  },
+  GPT_5_MINI: {
+    name: 'GPT-5 Mini',
+    value: 'gpt-5-mini',
+    supports: ['text', 'image']
+  },
+  GPT_5_NANO: {
+    name: 'GPT-5 Nano',
+    value: 'gpt-5-nano',
+    supports: ['text', 'image']
+  },
+  GPT_5_PRO: {
+    name: 'GPT-5 Pro',
+    value: 'gpt-5-pro',
+    supports: ['text', 'image']
+  },
+  GPT_5_1: {
+    name: 'GPT-5.1',
+    value: 'gpt-5.1',
+    supports: ['text', 'image']
   },
   DALL_E_3: {
     name: 'DALL·E 3',
     value: 'dall-e-3',
-    supports: ['text']
-  },
-  WHISPER_1: {
-    name: 'Whisper',
-    value: 'whisper-1',
-    supports: ['audio']
-  },
-  TEXT_EMBEDDING_ADA_002: {
-    name: 'Text Embedding Ada 002',
-    value: 'text-embedding-ada-002',
     supports: ['text']
   },
   TEXT_EMBEDDING_3_SMALL: {
@@ -178,14 +218,34 @@ export const XAI = {
     value: 'grok-2',
     supports: ['text']
   },
-  GROK_2_1212: {
-    name: 'Grok 2-1212',
-    value: 'grok-2-vision-1212',
-    supports: ['text']
-  },
   GROK_2_VISION_1212: {
     name: 'Grok 2 Vision-1212',
     value: 'grok-2-vision-1212',
+    supports: ['text', 'image']
+  },
+  GROK_4_FAST_REASONING: {
+    name: 'Grok 4 Fast Reasoning',
+    value: 'grok-4-fast-reasoning',
+    supports: ['text', 'image']
+  },
+  GROK_4_FAST_NON_REASONING: {
+    name: 'Grok 4 Fast Non-Reasoning',
+    value: 'grok-4-fast-non-reasoning',
+    supports: ['text', 'image']
+  },
+  GROK_4_1_FAST_REASONING: {
+    name: 'Grok 4.1 Fast Reasoning',
+    value: 'grok-4-1-fast-reasoning',
+    supports: ['text', 'image']
+  },
+  GROK_4_1_FAST_NON_REASONING: {
+    name: 'Grok 4.1 Fast Non-Reasoning',
+    value: 'grok-4-1-fast-non-reasoning',
+    supports: ['text', 'image']
+  },
+  GROK_CODE_FAST_1: {
+    name: 'Grok Code Fast 1',
+    value: 'grok-code-fast-1',
     supports: ['text', 'image']
   }
 };
