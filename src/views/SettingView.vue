@@ -61,6 +61,30 @@
         </v-tooltip>
       </template>
     </v-combobox>
+    <v-select
+      label="Fast Forward Default Command"
+      :items="commandList"
+      v-model="fastForwardCommand"
+      class="mb-2"
+      :disabled="!isFastForward"
+      persistent-hint
+    >
+      <template v-slot:prepend>
+        <v-checkbox-btn
+          v-model="isFastForward"
+          color="primary"
+          hide-details
+        ></v-checkbox-btn>
+      </template>
+      <template v-slot:append>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+          </template>
+          Automatically execute the default command after capture, skipping the popup.
+        </v-tooltip>
+      </template>
+    </v-select>
   </div>
   <div class="mb-3">
     <h2 class="mb-2">Assistant settings</h2>
@@ -176,6 +200,10 @@ import type { Storage } from '@/types/storage';
 import { API } from '@/constants/ai';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
+  CHROME_STORAGE_KEY,
+  DEFAULT_EXTRA_CONTENTS
+} from '@/core/content/constants?inline';
+import {
   TOOLTIP,
   DEFAULT,
   CAPTURE_METHOD_LIST,
@@ -208,6 +236,9 @@ const image = ref<string>('');
 const captureMethod = ref<string>();
 const selectingMethod = ref<number>();
 const historyLimitSize = ref<number>();
+const isFastForward = ref<boolean>(false);
+const fastForwardCommand = ref<string>('');
+const extraContent = ref<string[]>([]);
 const api = ref<string>();
 const apiModel = ref<string>();
 const apiUrl = ref<string>();
@@ -228,6 +259,10 @@ const fetchData = async () => {
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
+  isFastForward.value = sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD] ?? DEFAULT.isFastForward;
+  fastForwardCommand.value =
+    sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND] ?? DEFAULT.fastForwardCommand;
+  extraContent.value = sync.extraContent ?? DEFAULT.extraContent;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
   apiUrl.value = sync.apiInfo?.[api.value]?.apiUrl ?? '';
@@ -275,6 +310,9 @@ const captureMethodHint = computed(() => {
     (item) => item.value === captureMethod.value
   );
   return captureMethodWithHint?.hint;
+});
+const commandList = computed(() => {
+  return [...DEFAULT_EXTRA_CONTENTS, ...extraContent.value];
 });
 const apiHint = computed(() => {
   const apiWithHint = API_LIST.find((item) => item.value === api.value);
@@ -331,7 +369,9 @@ const setData = async () => {
         apiUrl: apiUrl.value?.trim() ?? ''
       }
     },
-    historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
+    historyLimitSize: parseInt(historyLimitSize.value as unknown as string),
+    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD]: isFastForward.value,
+    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND]: fastForwardCommand.value
   });
   alert('Update setting successfully!');
 };

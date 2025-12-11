@@ -5,6 +5,9 @@ export interface DefaultStorage extends Storage {
   apiInfo: StorageAPIInfo;
   image: string;
   historyLimitSize: number;
+  isFastForward: boolean;
+  fastForwardCommand: string;
+  extraContent: string[];
 }
 
 export interface Storage {
@@ -16,6 +19,8 @@ export interface Storage {
   image?: string;
   history?: StorageHistoryItem[];
   historyLimitSize?: number;
+  isFastForward?: boolean;
+  fastForwardCommand: string;
   extraContent?: Array<string>;
 }
 

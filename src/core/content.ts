@@ -1,6 +1,7 @@
 import extHtml from './content/ext.html?raw';
 import extCss from './content/ext.css?raw';
 import {
+  CHROME_STORAGE_KEY,
   CHROME_MESSAGE_BACKGROUND_ACTION,
   CHROME_MESSAGE_CONTENT_ACTION,
   DEFAULT_EXTRA_CONTENTS
@@ -18,6 +19,9 @@ import useSelecting from './selecting';
 const { isFullPage, capturePlace, captureType } = captureChromeAPIVisibleContent();
 const { selectingDragAndDrop } = useSelecting();
 const { init: initSelecting, destroy: destroySelecting } = selectingDragAndDrop();
+
+let isFastForward = false;
+
 
 const log = (...args: any) => {
   if (import.meta.env.MODE === 'development') {
@@ -61,6 +65,16 @@ function addQuickActionButtons() {
   });
 }
 
+function resetContentUI(shadow: ShadowRoot) {
+  const resultEl = shadow.getElementById('scan2ai-result')!;
+  resultEl.classList.add('hidden');
+  const selectEl = shadow.getElementById('scan2ai-select')!;
+  selectEl.classList.remove('hidden');
+  hideOverflow(false);
+  const selectAreaEl = shadow.getElementById('scan2ai-select-area')!;
+  selectAreaEl.classList.add('hidden');
+}
+
 function onChromeMessage(request: any) {
   log('listen', request);
   if (request.result) {
@@ -84,6 +98,21 @@ function onChromeMessage(request: any) {
       hideOverflow(false);
       break;
     case CHROME_MESSAGE_CONTENT_ACTION.SHOW_RESULT: {
+      if (isFastForward) {
+        // Reset the UI
+        const shadowEl = document.getElementById('scan2ai')!;
+        const shadow = shadowEl.shadowRoot!;
+        resetContentUI(shadow);
+        chrome.storage.sync.get([CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND], (result) => {
+          const command =
+            result[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND] || 'Describe this image';
+          chrome.runtime.sendMessage({
+            action: CHROME_MESSAGE_BACKGROUND_ACTION.SCAN,
+            value: command
+          });
+        });
+        return;
+      }
       const shadowEl = document.getElementById('scan2ai')!;
       const shadow = shadowEl.shadowRoot!;
       const selectEl = shadow.getElementById('scan2ai-select')!;
@@ -123,6 +152,21 @@ function initExtension() {
   html.innerHTML = extHtml;
   html.style.width = '100%';
   html.style.height = '100%';
+
+  // init extension storage
+  chrome.storage.sync.get(null, (result) => {
+    if (result[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD]) {
+      isFastForward = result[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD];
+
+      html
+        .querySelector('[data-name="scan2ai-toolbar-action"][data-action="fast-forward"]')
+        ?.classList.remove('btn-secondary');
+      html
+        .querySelector('[data-name="scan2ai-toolbar-action"][data-action="fast-forward"]')
+        ?.classList.add('btn-success');
+    }
+  });
+
   shadow.appendChild(html);
   const style = document.createElement('style');
   style.textContent = extCss;
@@ -133,13 +177,7 @@ function initExtension() {
 
   // init button events
   shadow.getElementById('scan2ai-result-dialog-close')?.addEventListener('click', () => {
-    const resultEl = shadow.getElementById('scan2ai-result')!;
-    resultEl.classList.add('hidden');
-    const selectEl = shadow.getElementById('scan2ai-select')!;
-    selectEl.classList.remove('hidden');
-    hideOverflow(false);
-    const selectAreaEl = shadow.getElementById('scan2ai-select-area')!;
-    selectAreaEl.classList.add('hidden');
+    resetContentUI(shadow);
   });
   /**
    * Button events
@@ -159,11 +197,18 @@ function initExtension() {
       const action = el.getAttribute('data-action');
       log('scan2ai-toolbar-action', action);
       switch (action) {
-        case CHROME_MESSAGE_BACKGROUND_ACTION.TURN_OFF:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.FAST_FORWARD:
+          isFastForward = !isFastForward;
+          chrome.storage.sync.set({
+            [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD]: isFastForward
+          });
+          el.classList.toggle('btn-secondary');
+          el.classList.toggle('btn-success');
+          break;
         case CHROME_MESSAGE_BACKGROUND_ACTION.HISTORY:
-        case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
         case CHROME_MESSAGE_BACKGROUND_ACTION.INSTRUCTION:
         case CHROME_MESSAGE_BACKGROUND_ACTION.SETTING:
+        case CHROME_MESSAGE_BACKGROUND_ACTION.TURN_OFF:
           chrome.runtime.sendMessage({
             action: el.getAttribute('data-action')
           });

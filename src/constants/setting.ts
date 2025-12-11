@@ -115,5 +115,8 @@ export const DEFAULT: DefaultStorage = {
     }
   },
   image: HELLO_WORLD_IMAGE,
-  historyLimitSize: 8
+  historyLimitSize: 8,
+  isFastForward: false,
+  fastForwardCommand: 'Describe this image',
+  extraContent: []
 };
