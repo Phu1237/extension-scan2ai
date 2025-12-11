@@ -200,10 +200,6 @@ import type { Storage } from '@/types/storage';
 import { API } from '@/constants/ai';
 import { CHROME_STORAGE } from '@/constants/common';
 import {
-  CHROME_STORAGE_KEY,
-  DEFAULT_EXTRA_CONTENTS
-} from '@/core/content/constants?inline';
-import {
   TOOLTIP,
   DEFAULT,
   CAPTURE_METHOD_LIST,
@@ -259,9 +255,9 @@ const fetchData = async () => {
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
-  isFastForward.value = sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD] ?? DEFAULT.isFastForward;
+  isFastForward.value = sync.isFastForward ?? DEFAULT.isFastForward;
   fastForwardCommand.value =
-    sync[CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND] ?? DEFAULT.fastForwardCommand;
+    sync.fastForwardCommand ?? DEFAULT.fastForwardCommand;
   extraContent.value = sync.extraContent ?? DEFAULT.extraContent;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
@@ -312,7 +308,7 @@ const captureMethodHint = computed(() => {
   return captureMethodWithHint?.hint;
 });
 const commandList = computed(() => {
-  return [...DEFAULT_EXTRA_CONTENTS, ...extraContent.value];
+  return [...new Set([...DEFAULT.extraContent, ...extraContent.value])];
 });
 const apiHint = computed(() => {
   const apiWithHint = API_LIST.find((item) => item.value === api.value);
@@ -370,8 +366,8 @@ const setData = async () => {
       }
     },
     historyLimitSize: parseInt(historyLimitSize.value as unknown as string),
-    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD]: isFastForward.value,
-    [CHROME_STORAGE_KEY.SYNC.FAST_FORWARD_COMMAND]: fastForwardCommand.value
+    isFastForward: isFastForward.value,
+    fastForwardCommand: fastForwardCommand.value
   });
   alert('Update setting successfully!');
 };

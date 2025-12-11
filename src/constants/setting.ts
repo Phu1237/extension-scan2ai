@@ -118,5 +118,5 @@ export const DEFAULT: DefaultStorage = {
   historyLimitSize: 8,
   isFastForward: false,
   fastForwardCommand: 'Describe this image',
-  extraContent: []
+  extraContent: ['Image to text', 'Describe this image']
 };

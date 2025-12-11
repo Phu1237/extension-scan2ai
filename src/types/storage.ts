@@ -20,7 +20,7 @@ export interface Storage {
   history?: StorageHistoryItem[];
   historyLimitSize?: number;
   isFastForward?: boolean;
-  fastForwardCommand: string;
+  fastForwardCommand?: string;
   extraContent?: Array<string>;
 }
 
