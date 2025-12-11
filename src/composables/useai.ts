@@ -4,7 +4,7 @@ import useCommon from './usecommon';
 import useChromeStorage from './usechromestorage';
 import useGemini from './ai/usegemini';
 import useOpenAI from './ai/useopenai';
-import { API, GEMINI, XAI, DEEPSEEK, MORE } from '@/constants/ai';
+import { API, GEMINI, XAI } from '@/constants/ai';
 import { DEFAULT } from '@/constants/setting';
 
 interface ChromeStorages {
@@ -22,6 +22,8 @@ export default function useAI() {
       return 'OpenAI';
     } else if (name === 'xai') {
       return 'xAI';
+    } else if (name === 'openai-compatible') {
+      return 'OpenAI Compatible';
     } else {
       throw new Error(`Unsupported AI name: ${name}`);
     }
@@ -102,7 +104,12 @@ export default function useAI() {
           }
         ).then((response) => resolve(response));
         return;
-      } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
+      } else if (
+        api === 'openai' ||
+        api === 'deepseek' ||
+        api === 'xai' ||
+        api === 'openai-compatible'
+      ) {
         let endpoint = API.OPENAI.uri;
         switch (api) {
           case 'deepseek':
@@ -110,6 +117,10 @@ export default function useAI() {
             break;
           case 'xai':
             endpoint = API.XAI.uri;
+            break;
+          case 'openai-compatible':
+            endpoint = sync.apiInfo[api].apiUrl ?? '';
+            break;
         }
         const { useOpenAI } = useAI();
         const { buildRequestMessage, sendRequest } = useOpenAI(endpoint);
@@ -164,7 +175,12 @@ export default function useAI() {
         jsonResult.error?.message ??
         jsonResult.candidates?.[0]?.finishReason ??
         'Unexpected error. Check raw result.';
-    } else if (api === 'openai' || api === 'deepseek' || api === 'xai') {
+    } else if (
+      api === 'openai' ||
+      api === 'deepseek' ||
+      api === 'xai' ||
+      api === 'openai-compatible'
+    ) {
       jsonResult = await response.json();
       result =
         jsonResult.choices?.[0]?.message.content ??

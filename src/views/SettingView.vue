@@ -116,6 +116,23 @@
       </template>
     </v-text-field>
     <v-text-field
+      v-if="api === 'openai-compatible'"
+      label="Base URL (*)"
+      hint="e.g. http://localhost:11434/v1/chat/completions"
+      class="mb-2"
+      v-model="apiUrl"
+      persistent-hint
+    >
+      <template v-slot:append>
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-icon v-bind="props" icon="mdi-help-circle-outline"></v-icon>
+          </template>
+          Enter the full URL for the chat completions endpoint.
+        </v-tooltip>
+      </template>
+    </v-text-field>
+    <v-text-field
       :label="'API key ' + (oldApiKey === '' ? '(*)' : '(Optional)')"
       hint="hint"
       class="mb-2"
@@ -193,6 +210,7 @@ const selectingMethod = ref<number>();
 const historyLimitSize = ref<number>();
 const api = ref<string>();
 const apiModel = ref<string>();
+const apiUrl = ref<string>();
 const apiKey = ref<string>();
 const oldApiKey = ref<string>();
 const chromeLocalUsage = ref<number>();
@@ -212,6 +230,7 @@ const fetchData = async () => {
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
+  apiUrl.value = sync.apiInfo?.[api.value]?.apiUrl ?? '';
 
   const { usage } = await getStorageUsage(CHROME_STORAGE.LOCAL);
   chromeLocalUsage.value = Math.round(usage * 100);
@@ -224,7 +243,9 @@ watch(api, (newAPI) => {
   if (storageApiModel) {
     apiModelValue = storageApiModel.apiModel;
   }
+
   apiModel.value = apiModelValue;
+  apiUrl.value = chromeSync.value?.apiInfo?.[newAPI]?.apiUrl ?? '';
   apiKey.value = '';
   oldApiKey.value = chromeLocal.value?.apiKey?.[newAPI] ?? '';
 });
@@ -306,7 +327,8 @@ const setData = async () => {
     api: api.value.trim(),
     apiInfo: {
       [api.value]: {
-        apiModel: apiModel.value?.trim() ?? ''
+        apiModel: apiModel.value?.trim() ?? '',
+        apiUrl: apiUrl.value?.trim() ?? ''
       }
     },
     historyLimitSize: parseInt(historyLimitSize.value as unknown as string)
@@ -350,7 +372,12 @@ const test = async () => {
       jsonResult.candidates?.[0]?.content.parts?.[0]?.text ??
       jsonResult.error?.message ??
       'Unexpected error. Check raw result.';
-  } else if (api.value === 'openai' || api.value === 'deepseek' || api.value === 'xai') {
+  } else if (
+    api.value === 'openai' ||
+    api.value === 'deepseek' ||
+    api.value === 'xai' ||
+    api.value === 'openai-compatible'
+  ) {
     let endpoint = API.OPENAI.uri;
     switch (api.value) {
       case 'deepseek':
@@ -358,6 +385,10 @@ const test = async () => {
         break;
       case 'xai':
         endpoint = API.XAI.uri;
+        break;
+      case 'openai-compatible':
+        endpoint = apiUrl.value?.trim() ?? '';
+        break;
     }
     const { useOpenAI } = useAI();
     const { buildRequestMessage, sendRequest } = useOpenAI(endpoint);

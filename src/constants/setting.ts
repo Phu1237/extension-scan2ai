@@ -43,7 +43,7 @@ export const SELECTING_METHOD_LIST = [
 
 export const HISTORY_LIMIT_SIZE_LIST = [4, 8, 12, 16, 20, 24];
 
-export const API_LIST = [API.DEEPSEEK, API.GEMINI, API.OPENAI, API.XAI];
+export const API_LIST = [API.DEEPSEEK, API.GEMINI, API.OPENAI, API.OPENAI_COMPATIBLE, API.XAI];
 
 export const API_MODEL_LIST = {
   [API.DEEPSEEK.value]: [
@@ -79,7 +79,8 @@ export const API_MODEL_LIST = {
     XAI.GROK_4_1_FAST_NON_REASONING,
     XAI.GROK_CODE_FAST_1,
     MORE.CUSTOM
-  ]
+  ],
+  [API.OPENAI_COMPATIBLE.value]: [MORE.CUSTOM]
 };
 
 export const TOOLTIP = {
@@ -108,6 +109,9 @@ export const DEFAULT: DefaultStorage = {
     },
     [API.XAI.value]: {
       apiModel: XAI.GROK_4_1_FAST_NON_REASONING.value
+    },
+    [API.OPENAI_COMPATIBLE.value]: {
+      apiModel: MORE.CUSTOM.value
     }
   },
   image: HELLO_WORLD_IMAGE,

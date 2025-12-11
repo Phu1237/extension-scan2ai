@@ -42,6 +42,15 @@ export const API = {
         'Follow this instructions to get <a href="https://docs.x.ai/docs/introduction" target="_blank">xAI API key</a>.'
     },
     uri: 'https://api.x.ai/v1/chat/completions'
+  },
+  OPENAI_COMPATIBLE: {
+    name: 'OpenAI Compatible',
+    value: 'openai-compatible',
+    hint: {
+      model: 'OpenAI compatible model.',
+      api_key: 'API Key for your compatible provider.'
+    },
+    uri: ''
   }
 };
 

@@ -26,6 +26,7 @@ export interface StorageAPIInfo {
 export interface StorageAPIInfoObject {
   apiModel: string;
   useLatest?: boolean;
+  apiUrl?: string;
 }
 
 export interface StorageAPIKey {
