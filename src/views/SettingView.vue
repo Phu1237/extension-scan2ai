@@ -66,15 +66,15 @@
       :items="commandList"
       v-model="fastForwardCommand"
       class="mb-2"
-      :disabled="!isFastForward"
       persistent-hint
     >
       <template v-slot:prepend>
-        <v-checkbox-btn
+        <v-switch
+          :label="'Fast Forward: ' + (isFastForward ? 'ON' : 'OFF')"
           v-model="isFastForward"
           color="primary"
           hide-details
-        ></v-checkbox-btn>
+        ></v-switch>
       </template>
       <template v-slot:append>
         <v-tooltip location="bottom">
@@ -255,9 +255,8 @@ const fetchData = async () => {
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
-  isFastForward.value = sync.isFastForward ?? DEFAULT.isFastForward;
-  fastForwardCommand.value =
-    sync.fastForwardCommand ?? DEFAULT.fastForwardCommand;
+  isFastForward.value = sync.fastForward ?? DEFAULT.isFastForward;
+  fastForwardCommand.value = sync.fastForwardCommand ?? DEFAULT.fastForwardCommand;
   extraContent.value = sync.extraContent ?? DEFAULT.extraContent;
   api.value = sync.api ?? DEFAULT.api;
   apiModel.value = sync.apiInfo?.[api.value]?.apiModel ?? DEFAULT.apiInfo.gemini.apiModel;
