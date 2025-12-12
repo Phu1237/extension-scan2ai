@@ -255,7 +255,7 @@ const fetchData = async () => {
   captureMethod.value = sync.captureMethod ?? DEFAULT.captureMethod;
   selectingMethod.value = sync.selectingMethod ?? DEFAULT.selectingMethod;
   historyLimitSize.value = sync.historyLimitSize ?? DEFAULT.historyLimitSize;
-  isFastForward.value = sync.fastForward ?? DEFAULT.isFastForward;
+  isFastForward.value = sync.fastForward ?? DEFAULT.fastForward;
   fastForwardCommand.value = sync.fastForwardCommand ?? DEFAULT.fastForwardCommand;
   extraContent.value = sync.extraContent ?? DEFAULT.extraContent;
   api.value = sync.api ?? DEFAULT.api;
@@ -365,7 +365,7 @@ const setData = async () => {
       }
     },
     historyLimitSize: parseInt(historyLimitSize.value as unknown as string),
-    isFastForward: isFastForward.value,
+    fastForward: isFastForward.value,
     fastForwardCommand: fastForwardCommand.value
   });
   alert('Update setting successfully!');

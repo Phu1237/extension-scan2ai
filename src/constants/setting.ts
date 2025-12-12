@@ -116,7 +116,7 @@ export const DEFAULT: DefaultStorage = {
   },
   image: HELLO_WORLD_IMAGE,
   historyLimitSize: 8,
-  isFastForward: false,
+  fastForward: false,
   fastForwardCommand: 'Describe this image',
   extraContent: ['Image to text', 'Describe this image']
 };
