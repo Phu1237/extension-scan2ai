@@ -1,8 +1,8 @@
 export const CHROME_STORAGE_KEY = {
   LOCAL: {},
   SYNC: {
-    FAST_FORWARD: 'fast-forward',
-    FAST_FORWARD_COMMAND: 'fast-forward-command'
+    FAST_FORWARD: 'fastForward',
+    FAST_FORWARD_COMMAND: 'fastForwardCommand'
   }
 };
 
